@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 
 import { HttpStatusErrorCodes } from './enums';
@@ -6,11 +6,21 @@ import { EndpointNotSet } from './exceptions';
 import { ClientOptions, DataOptions } from './types';
 
 class ClientBasic {
-  private baseUrl: string;
-  protected clientOptions: ClientOptions;
+  clientOptions: ClientOptions;
+  client: AxiosInstance;
   constructor(baseUrl: string, clientOptions: ClientOptions) {
-    this.baseUrl = baseUrl;
     this.clientOptions = clientOptions;
+
+    this.client = axios.create({
+      baseURL: baseUrl,
+      auth: this.clientOptions.authProvider
+    });
+
+    axiosRetry(this.client, {
+      retries: this.clientOptions.tries,
+      retryDelay: this.retryDelay,
+      retryCondition: this.retryCondition
+    });
   }
 
   /**
@@ -36,22 +46,7 @@ class ClientBasic {
     endpoint: string,
     dataOptions?: DataOptions
   ): Promise<AxiosResponse> {
-    if (!endpoint) {
-      throw new EndpointNotSet(endpoint);
-    }
-
-    const client = axios.create({
-      baseURL: this.baseUrl,
-      auth: this.clientOptions.authProvider
-    });
-
-    axiosRetry(client, {
-      retries: this.clientOptions.tries,
-      retryDelay: this.retryDelay,
-      retryCondition: this.retryCondition
-    });
-
-    return client.request({
+    return this.client.request({
       method: methodName,
       url: endpoint,
       timeout: this.clientOptions.timeout,
@@ -71,7 +66,7 @@ class ClientBasic {
    * @memberof BasicClient
    */
   retryDelay(_retryCount: number, error: AxiosError): number {
-    return error.response?.status === HttpStatusErrorCodes.TooManyRequests
+    return error.response.status === HttpStatusErrorCodes.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
       : this.clientOptions.retryDelay * 1000;
   }
@@ -105,6 +100,8 @@ class ClientBasic {
    * // => [{ id: 1, name: 'test' }]
    */
   async search(params?: object): Promise<AxiosResponse> {
+    if (!this.clientOptions.endpoints.search)
+      throw new EndpointNotSet('search');
     return this.makeRequest('GET', this.clientOptions.endpoints.search, params);
   }
 
@@ -122,9 +119,10 @@ class ClientBasic {
    * const response = await client.fetch('1');
    */
   async fetch(id: string): Promise<AxiosResponse> {
+    if (!this.clientOptions.endpoints.fetch) throw new EndpointNotSet('fetch');
     return this.makeRequest(
       'GET',
-      this.clientOptions.endpoints.fetch.replace(':id', id)
+      this.clientOptions.endpoints.fetch.replace(':id', id.toString())
     );
   }
 
@@ -144,6 +142,8 @@ class ClientBasic {
    * // => { id: 1, name: 'test' }
    */
   async create(data: object): Promise<AxiosResponse> {
+    if (!this.clientOptions.endpoints.create)
+      throw new EndpointNotSet('create');
     return this.makeRequest('POST', this.clientOptions.endpoints.create, data);
   }
 
@@ -164,6 +164,8 @@ class ClientBasic {
    * // => { id: 1, name: 'test' }
    */
   async update(id: string, data: object): Promise<AxiosResponse> {
+    if (!this.clientOptions.endpoints.update)
+      throw new EndpointNotSet('update');
     return this.makeRequest(
       'PUT',
       this.clientOptions.endpoints.update.replace(':id', id),
@@ -188,6 +190,8 @@ class ClientBasic {
    * // The item is still returned, but it is deleted
    */
   async delete(id: string): Promise<AxiosResponse> {
+    if (!this.clientOptions.endpoints.delete)
+      throw new EndpointNotSet('delete');
     return this.makeRequest(
       'DELETE',
       this.clientOptions.endpoints.delete.replace(':id', id)
