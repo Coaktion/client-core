@@ -8,6 +8,12 @@ Client Core is a libary helping you to create a client RestFul API.
 npm install client-core
 ```
 
+## Generate docs
+
+```bash
+npm run generate-docs
+```
+
 ## Usage
 
 ```typescript
