@@ -9,11 +9,11 @@
  * // => EndpointNotSet: fetch endpoint is not defined
  */
 class EndpointNotSet extends Error {
-	constructor(endpoint: string) {
-		const message = `${endpoint} endpoint is not defined`;
-		super(message);
-		this.name = 'EndpointNotSet';
-	}
+  constructor(endpoint: string) {
+    const message = `${endpoint} endpoint is not defined`;
+    super(message);
+    this.name = 'EndpointNotSet';
+  }
 }
 
 export { EndpointNotSet };
