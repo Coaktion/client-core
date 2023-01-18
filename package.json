@@ -19,7 +19,7 @@
     "generate-docs": "typedoc",
     "pre-commit": "npx pretty-quick --staged && npm run test",
     "pre-commit:prepare": "npx husky install",
-    "release": "standard-version && git push --follow-tags && npm publish"
+    "release": "standard-version && git push --follow-tags"
   },
   "keywords": [],
   "author": "",
