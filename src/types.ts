@@ -14,7 +14,7 @@ export type ClientOptions = {
    * @default null
    * @example new AuthProvider()
    */
-  authProvider: any;
+  authProvider?: any;
   /**
    * Timeout for requests
    * @type {number}
@@ -23,7 +23,7 @@ export type ClientOptions = {
    * @example 10000
    * @example 0
    */
-  timeout: number;
+  timeout?: number;
   /**
    * The number of times to retry before failing
    * @type {number}
@@ -32,7 +32,7 @@ export type ClientOptions = {
    * @example 3
    * @example 0
    */
-  tries: number;
+  tries?: number;
   /**
    * The number of seconds to wait between retries
    * @type {number}
@@ -40,7 +40,7 @@ export type ClientOptions = {
    * @default 3
    * @example 10
    */
-  retryDelay: number;
+  retryDelay?: number;
   /**
    * The key to use for rate limiting
    * @type {string}
@@ -56,7 +56,16 @@ export type ClientOptions = {
    * @example { search: '/resources', fetch: '/resources/:id' }
    * @example { search: '/resources', fetch: '/resources/:id', create: '/resources', update: '/resources/:id', delete: '/resources/:id' }
    */
-  endpoints: Endpoints;
+  endpoints?: Endpoints;
+};
+
+export const defaultClientOptions: ClientOptions = {
+  appName: 'unknown',
+  timeout: 10000,
+  tries: 3,
+  retryDelay: 3,
+  rateLimitKey: 'Retry-After',
+  endpoints: {}
 };
 
 export type Endpoints = {
