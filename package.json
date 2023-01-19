@@ -1,9 +1,13 @@
 {
-  "name": "@repo-actions/client-core",
+  "name": "@Coaktion/client-core",
   "version": "0.1.3",
   "description": "Libary helping you to create a client RestFul API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "restricted",
+    "registry": "https://npm.pkg.github.com/"
+  },
   "scripts": {
     "clean": "rm -fr dist/*",
     "build": "npm run clean && tsc",

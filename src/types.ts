@@ -1,4 +1,4 @@
-export interface ClientOptions {
+export type ClientOptions = {
   /**
    * The name of the app using the client
    * @type {string}
@@ -57,9 +57,9 @@ export interface ClientOptions {
    * @example { search: '/resources', fetch: '/resources/:id', create: '/resources', update: '/resources/:id', delete: '/resources/:id' }
    */
   endpoints: Endpoints;
-}
+};
 
-export interface Endpoints {
+export type Endpoints = {
   /**
    * The endpoint to use for searching
    * @type {string}
@@ -100,21 +100,9 @@ export interface Endpoints {
    * @example '/resources/:id'
    */
   delete?: string;
-}
+};
 
-export interface AuthConfig {
-  method: string;
-  type: string;
-  clientId?: string;
-  clientSecret?: string;
-  username?: string;
-  password?: string;
-  token?: string;
-  baseUrl?: string;
-  endpoint?: string;
-}
-
-export interface DataOptions {
+export type DataOptions = {
   /**
    * The data to use for the request
    * @type {object}
@@ -131,4 +119,4 @@ export interface DataOptions {
    * @example { name: 'John Doe' }
    */
   params?: object;
-}
+};
