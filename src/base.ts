@@ -102,7 +102,9 @@ class ClientBasic {
   async search(params?: object): Promise<AxiosResponse> {
     if (!this.clientOptions.endpoints.search)
       throw new EndpointNotSet('search');
-    return this.makeRequest('GET', this.clientOptions.endpoints.search, params);
+    return this.makeRequest('GET', this.clientOptions.endpoints.search, {
+      params
+    });
   }
 
   /**
