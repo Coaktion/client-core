@@ -6,4 +6,4 @@ export {
   defaultClientOptions
 } from './types';
 export { EndpointNotSet } from './exceptions';
-export { HttpStatusErrorCodes } from './enums';
+export { HttpStatusCodesRetryCondition, HtttpStatusCodeError } from './enums';

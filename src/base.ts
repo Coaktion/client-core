@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 
-import { HttpStatusErrorCodes } from './enums';
+import { HttpStatusCodesRetryCondition } from './enums';
 import { EndpointNotSet } from './exceptions';
 import { ClientOptions, DataOptions } from './types';
 
@@ -66,7 +66,8 @@ class ClientBasic {
    * @memberof BasicClient
    */
   retryDelay(_retryCount: number, error: AxiosError): number {
-    return error.response.status === HttpStatusErrorCodes.TooManyRequests
+    return error.response.status ===
+      HttpStatusCodesRetryCondition.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
       : this.clientOptions.retryDelay * 1000;
   }
@@ -81,7 +82,9 @@ class ClientBasic {
    * @memberof BasicClient
    */
   retryCondition(error: AxiosError): boolean {
-    return Object.values(HttpStatusErrorCodes).includes(error.response?.status);
+    return Object.values(HttpStatusCodesRetryCondition).includes(
+      error.response?.status
+    );
   }
 
   /**

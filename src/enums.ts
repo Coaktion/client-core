@@ -4,7 +4,7 @@
  * @see https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
  * @see https://www.npmjs.com/package/http-status-codes
  */
-export enum HttpStatusErrorCodes {
+export enum HttpStatusCodesRetryCondition {
   /**
    * The request timed out
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/408
@@ -50,4 +50,40 @@ export enum HttpStatusErrorCodes {
    * @see https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/524
    */
   ATimeoutOccurred = 524
+}
+
+export enum HtttpStatusCodeError {
+  BadRequest = 400,
+  Unauthorized = 401,
+  PaymentRequired = 402,
+  Forbidden = 403,
+  NotFound = 404,
+  MethodNotAllowed = 405,
+  NotAcceptable = 406,
+  ProxyAuthenticationRequired = 407,
+  Conflict = 409,
+  Gone = 410,
+  LengthRequired = 411,
+  PreconditionFailed = 412,
+  PayloadTooLarge = 413,
+  URITooLong = 414,
+  UnsupportedMediaType = 415,
+  RangeNotSatisfiable = 416,
+  ExpectationFailed = 417,
+  ImATeapot = 418,
+  MisdirectedRequest = 421,
+  UnprocessableEntity = 422,
+  Locked = 423,
+  FailedDependency = 424,
+  UpgradeRequired = 426,
+  PreconditionRequired = 428,
+  RequestHeaderFieldsTooLarge = 431,
+  UnavailableForLegalReasons = 451,
+  NotImplemented = 501,
+  HTTPVersionNotSupported = 505,
+  VariantAlsoNegotiates = 506,
+  InsufficientStorage = 507,
+  LoopDetected = 508,
+  NotExtended = 510,
+  NetworkAuthenticationRequired = 511
 }
