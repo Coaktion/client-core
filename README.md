@@ -5,7 +5,7 @@ Client Core is a libary helping you to create a client RestFul API.
 ## Installation
 
 ```bash
-npm install client-core
+npm install @coaktion/client-core
 ```
 
 ## Generate docs
