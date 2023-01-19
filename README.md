@@ -17,17 +17,17 @@ npm run generate-docs
 ## Usage
 
 ```typescript
+import {
+  ClientBasic,
+  ClientOptions,
+  defaultClientOptions
+} from '@coaktion/client-core';
 import { AxiosResponse } from 'axios';
-import { ClientBasic, ClientOptions } from 'client-core';
 
 class ApiClient extends ClientBasic {
-  constructor(baseUrl: string, options: ClientOptions) {
+  constructor(baseUrl: string, _options?: ClientOptions) {
     super(baseUrl, {
-      appName: options.appName,
-      authProvider: options.authProvider,
-      timeout: options.timeout,
-      tries: options.tries,
-      retryDelay: options.retryDelay,
+      ...defaultClientOptions,
       endpoints: {
         search: '/resources',
         fetch: '/resources/:id',
@@ -43,13 +43,7 @@ class ApiClient extends ClientBasic {
   }
 }
 
-const apiClient = new ApiClient('https://api.example.com', {
-  appName: 'my-app',
-  authProvider: () => 'Bearer my-token',
-  timeout: 10000,
-  tries: 3,
-  retryDelay: 1000
-});
+const apiClient = new ApiClient('https://api.example.com');
 
 apiClient.search({ query: 'test' }).then((response) => {
   console.log(response.data);
