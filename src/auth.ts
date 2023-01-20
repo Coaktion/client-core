@@ -56,7 +56,13 @@ export class BearerAuth implements AuthBasic {
     const response = {};
     const key = this.authOptions.headerKey || 'Authorization';
     if (this.authOptions.endpoint) {
-      const responseToken = await this.client.post(this.authOptions.endpoint);
+      const responseToken = await this.client.request({
+        method: 'post',
+        url: this.authOptions.endpoint,
+        data: this.authOptions.bearer.data || {},
+        params: this.authOptions.bearer.params || {}
+      });
+
       response[key] = await this.getBearerToken(responseToken);
       return response;
     }

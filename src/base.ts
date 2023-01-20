@@ -92,7 +92,7 @@ class ClientBasic {
    */
   retryCondition(error: AxiosError): boolean {
     return Object.values(HttpStatusCodesRetryCondition).includes(
-      error.response?.status
+      error.response.status
     );
   }
 

@@ -1,3 +1,5 @@
+import MockAdapter from 'axios-mock-adapter';
+
 import { AuthApiKey, BasicAuth, BearerAuth } from '../src/auth';
 
 describe('Auth', () => {
@@ -26,12 +28,54 @@ describe('Auth', () => {
         ).toString('base64')
     });
   });
+});
 
-  it('BearerAuth', () => {
+describe('BearerAuth', () => {
+  it('should return bearer token request server auth when calling getToken', async () => {
     const auth = new BearerAuth({
       baseUrl: 'http://localhost',
-      endpoint: '/auth'
+      endpoint: '/auth',
+      headerKey: 'Authorization',
+      bearer: {
+        data: {},
+        params: {}
+      }
+    });
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/auth').reply(200, { access_token: 'abc' });
+    expect(auth).toBeInstanceOf(BearerAuth);
+    expect(auth.authOptions.baseUrl).toBe('http://localhost');
+    expect(auth.authOptions.endpoint).toBe('/auth');
+    expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
+  });
+
+  it('should throw AxiosError when calling getToken', async () => {
+    const auth = new BearerAuth({
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      bearer: {
+        data: {}
+      }
+    });
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/auth').reply(500, { error: 'error' });
+    expect(auth).toBeInstanceOf(BearerAuth);
+    expect(auth.authOptions.baseUrl).toBe('http://localhost');
+    expect(auth.authOptions.endpoint).toBe('/auth');
+    try {
+      await auth.getToken();
+    } catch (error) {
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toEqual('Request failed with status code 500');
+    }
+  });
+
+  it('should return bearer token apiKey when calling getToken', async () => {
+    const auth = new BearerAuth({
+      apiKey: '123'
     });
     expect(auth).toBeInstanceOf(BearerAuth);
+    expect(auth.authOptions.apiKey).toBe('123');
+    expect(await auth.getToken()).toEqual({ Authorization: 'Bearer 123' });
   });
 });

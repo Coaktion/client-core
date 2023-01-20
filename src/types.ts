@@ -130,6 +130,11 @@ export type DataOptions = {
   params?: object;
 };
 
+export type BearerAuthOptions = {
+  data?: object;
+  params?: object;
+};
+
 export type AuthOptions = {
   baseUrl?: string;
   endpoint?: string;
@@ -137,4 +142,5 @@ export type AuthOptions = {
   apiKey?: string;
   username?: string;
   password?: string;
+  bearer?: BearerAuthOptions;
 };
