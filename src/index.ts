@@ -1,6 +1,7 @@
 export { ClientBasic } from './base';
 export {
   AuthOptions,
+  BearerAuthOptions,
   ClientOptions,
   Endpoints,
   DataOptions,
