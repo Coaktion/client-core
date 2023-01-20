@@ -64,8 +64,10 @@ class ClientBasic {
    * @param {AxiosError} error The error that was thrown
    * @returns {number} The number of milliseconds to wait before retrying
    * @memberof BasicClient
+   * @throws {AxiosError}
    */
-  retryDelay(_retryCount: number, error: AxiosError): number {
+  retryDelay(retryCount: number, error: AxiosError): number {
+    if (retryCount >= this.clientOptions.tries) throw error;
     return error.response.status ===
       HttpStatusCodesRetryCondition.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
