@@ -129,3 +129,12 @@ export type DataOptions = {
    */
   params?: object;
 };
+
+export type AuthOptions = {
+  baseUrl?: string;
+  endpoint?: string;
+  headerKey?: string;
+  apiKey?: string;
+  username?: string;
+  password?: string;
+};
