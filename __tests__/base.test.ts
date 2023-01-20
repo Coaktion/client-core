@@ -45,6 +45,15 @@ describe('ClientBasic', () => {
     expect(response.data).toEqual(data);
   });
 
+  it('should verify authProvider is set when callign makeRequest', async () => {
+    clientBasic.clientOptions.authProvider = {
+      getToken: jest.fn().mockResolvedValue({ Authorization: 'token' })
+    };
+
+    await clientBasic.makeRequest('GET', '/users');
+    expect(clientBasic.clientOptions.authProvider.getToken).toHaveBeenCalled();
+  });
+
   it.each(['search', 'fetch', 'create', 'update', 'delete'])(
     'should throw an error when calling search with an calling %s',
     async (action: string) => {

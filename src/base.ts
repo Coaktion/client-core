@@ -44,14 +44,21 @@ class ClientBasic {
   async makeRequest(
     methodName: string,
     endpoint: string,
-    dataOptions?: DataOptions
+    dataOptions?: DataOptions,
+    headers?: object
   ): Promise<AxiosResponse> {
+    if (this.clientOptions.authProvider) {
+      const token = await this.clientOptions.authProvider.getToken();
+      headers = { ...token, ...headers };
+    }
+
     return this.client.request({
       method: methodName,
       url: endpoint,
       timeout: this.clientOptions.timeout,
       data: dataOptions?.data,
-      params: dataOptions?.params
+      params: dataOptions?.params,
+      headers
     });
   }
 
@@ -85,7 +92,7 @@ class ClientBasic {
    */
   retryCondition(error: AxiosError): boolean {
     return Object.values(HttpStatusCodesRetryCondition).includes(
-      error.response?.status
+      error.response.status
     );
   }
 

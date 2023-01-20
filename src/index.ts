@@ -1,5 +1,6 @@
 export { ClientBasic } from './base';
 export {
+  AuthOptions,
   ClientOptions,
   Endpoints,
   DataOptions,
@@ -7,3 +8,5 @@ export {
 } from './types';
 export { EndpointNotSet } from './exceptions';
 export { HttpStatusCodesRetryCondition, HtttpStatusCodeError } from './enums';
+export { AuthBasic } from './interfaces';
+export { AuthApiKey, BasicAuth, BearerAuth } from './auth';
