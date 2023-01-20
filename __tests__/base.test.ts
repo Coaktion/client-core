@@ -29,7 +29,8 @@ const clientBasic = new ClientBasic('https://api.example.com/v1', {
   endpoints,
   retryDelay: 3,
   timeout: 3000,
-  tries: 3
+  tries: 3,
+  rateLimitKey: 'Retry-After'
 });
 const mock = new MockAdapter(clientBasic.client);
 
@@ -44,7 +45,7 @@ describe('ClientBasic', () => {
     expect(response.data).toEqual(data);
   });
 
-  it.each([['search'], ['fetch'], ['create'], ['update'], ['delete']])(
+  it.each(['search', 'fetch', 'create', 'update', 'delete'])(
     'should throw an error when calling search with an calling %s',
     async (action: string) => {
       try {
@@ -68,34 +69,29 @@ describe('ClientBasic', () => {
 
   it('should receive the object when calling create', async () => {
     const data = { id: 1, name: 'test' };
-    mock.onPost('/users').reply(200, data);
-    const response = await clientBasic.makeRequest('post', '/users');
+    const status = 201;
+    mock.onPost('/users').reply(status, data);
+    const response = await clientBasic.create(data);
     expect(response.data).toEqual(data);
-  });
-
-  it('should throw an error when calling search with an calling create', async () => {
-    try {
-      clientBasic.clientOptions.endpoints = {};
-      await clientBasic.create({ id: 1, name: 'test' });
-    } catch (error) {
-      expect(error.message).toEqual('create endpoint is not defined');
-    } finally {
-      clientBasic.clientOptions.endpoints = endpoints;
-    }
+    expect(response.status).toEqual(status);
   });
 
   it('should receive the object when calling update', async () => {
     const data = { id: 1, name: 'test' };
-    mock.onPut('/users/1').reply(200, data);
+    const status = 200;
+    mock.onPut('/users/1').reply(status, data);
     const response = await clientBasic.update('1', data);
     expect(response.data).toEqual(data);
+    expect(response.status).toEqual(status);
   });
 
   it('should receive the object when calling delete', async () => {
     const data = { id: 1, name: 'test' };
-    mock.onDelete('/users/1').reply(200, data);
+    const status = 200;
+    mock.onDelete('/users/1').reply(status, data);
     const response = await clientBasic.delete('1');
     expect(response.data).toEqual(data);
+    expect(response.status).toEqual(status);
   });
 
   it.each(statusCodeRetry)(
@@ -124,14 +120,39 @@ describe('ClientBasic', () => {
     }
   );
 
-  it('should return false when calling retryCondition', async () => {
+  it('should return too many request delay value when calling retryDelay', () => {
     const axiosError = {
+      message: 'Too Many Requests',
+      code: 'TOO_MANY_REQUESTS',
       config: {},
       response: {
-        status: 200
+        data: {
+          message: 'Too Many Requests'
+        },
+        status: 429,
+        statusText: 'Too Many Requests',
+        headers: { 'Retry-After': '10' } as object
       }
     } as AxiosError;
+    const response = clientBasic.retryDelay(10, axiosError);
+    expect(response).toEqual(10);
+  });
 
-    expect(clientBasic.retryCondition(axiosError)).toBeFalsy();
+  it('should return default delay value when calling retryDelay', () => {
+    const axiosError = {
+      message: 'Server Internal Error',
+      code: 'SERVER_INTERNAL_ERROR',
+      config: {},
+      response: {
+        data: {
+          message: 'Server Internal Error'
+        },
+        status: 500,
+        statusText: 'Server Internal Error',
+        headers: {} as object
+      }
+    } as AxiosError;
+    const response = clientBasic.retryDelay(10, axiosError);
+    expect(response).toEqual(3000);
   });
 });
