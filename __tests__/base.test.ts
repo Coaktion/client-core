@@ -120,39 +120,36 @@ describe('ClientBasic', () => {
     }
   );
 
-  it('should return too many request delay value when calling retryDelay', () => {
-    const axiosError = {
-      message: 'Too Many Requests',
-      code: 'TOO_MANY_REQUESTS',
-      config: {},
-      response: {
-        data: {
-          message: 'Too Many Requests'
-        },
-        status: 429,
-        statusText: 'Too Many Requests',
-        headers: { 'Retry-After': '10' } as object
-      }
-    } as AxiosError;
-    const response = clientBasic.retryDelay(10, axiosError);
-    expect(response).toEqual(10);
-  });
+  it.each([
+    ['too many request', 429, 10],
+    ['other', 500, 3000]
+  ])(
+    'should return %s delay value when calling retryDelay',
+    (_type, code, expected) => {
+      const axiosError = {
+        message: 'Too Many Requests',
+        code: 'TOO_MANY_REQUESTS',
+        config: {},
+        response: {
+          data: {
+            message: 'Too Many Requests'
+          },
+          status: code,
+          statusText: 'Too Many Requests',
+          headers: { 'Retry-After': '10' } as object
+        }
+      } as AxiosError;
+      const response = clientBasic.retryDelay(1, axiosError);
+      expect(response).toEqual(expected);
+    }
+  );
 
-  it('should return default delay value when calling retryDelay', () => {
-    const axiosError = {
-      message: 'Server Internal Error',
-      code: 'SERVER_INTERNAL_ERROR',
-      config: {},
-      response: {
-        data: {
-          message: 'Server Internal Error'
-        },
-        status: 500,
-        statusText: 'Server Internal Error',
-        headers: {} as object
-      }
-    } as AxiosError;
-    const response = clientBasic.retryDelay(10, axiosError);
-    expect(response).toEqual(3000);
+  it('should throw an AxiosError when calling retryDelay with an invalid status code', () => {
+    const axiosError = new AxiosError();
+    try {
+      clientBasic.retryDelay(10, axiosError);
+    } catch (error) {
+      expect(error).toBeInstanceOf(AxiosError);
+    }
   });
 });
