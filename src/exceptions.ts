@@ -8,7 +8,7 @@
  * throw new EndpointNotSet('fetch');
  * // => EndpointNotSet: fetch endpoint is not defined
  */
-class EndpointNotSet extends Error {
+export class EndpointNotSet extends Error {
   constructor(endpoint: string) {
     const message = `${endpoint} endpoint is not defined`;
     super(message);
@@ -16,4 +16,18 @@ class EndpointNotSet extends Error {
   }
 }
 
-export { EndpointNotSet };
+export class InvalidAuthOptions extends Error {
+  constructor() {
+    const message = 'Invalid auth options';
+    super(message);
+    this.name = 'InvalidAuthOptions';
+  }
+}
+
+export class AuthProviderNotFound extends Error {
+  constructor() {
+    const message = 'Auth provider not found';
+    super(message);
+    this.name = 'AuthProviderNotFound';
+  }
+}

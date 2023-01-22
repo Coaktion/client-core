@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 
 import { AuthBasic } from './interfaces';
 import { AuthOptions } from './types';
@@ -45,29 +45,31 @@ export class BearerAuth implements AuthBasic {
     });
   }
 
-  async getBearerToken(response: AxiosResponse | AxiosError): Promise<string> {
-    if (response instanceof AxiosError) {
-      throw response;
-    }
-    return 'Bearer ' + response.data.access_token;
-  }
-
-  async getToken(): Promise<object> {
-    const response = {};
-    const key = this.authOptions.headerKey || 'Authorization';
-    if (this.authOptions.endpoint) {
-      const responseToken = await this.client.request({
+  async getBearerToken(): Promise<string> {
+    try {
+      const response = await this.client.request({
         method: 'post',
         url: this.authOptions.endpoint,
         data: this.authOptions.bearer.data || {},
         params: this.authOptions.bearer.params || {}
       });
+      return 'Bearer ' + response.data.access_token;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        throw error;
+      }
+      throw new Error(error);
+    }
+  }
 
-      response[key] = await this.getBearerToken(responseToken);
-      return response;
+  async getToken(): Promise<object> {
+    const response = {};
+    const key = this.authOptions.headerKey || 'Authorization';
+    response[key] = 'Bearer ' + this.authOptions.apiKey;
+    if (this.authOptions.endpoint) {
+      response[key] = await this.getBearerToken();
     }
 
-    response[key] = 'Bearer ' + this.authOptions.apiKey;
     return response;
   }
 }

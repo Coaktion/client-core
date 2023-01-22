@@ -2,14 +2,21 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 
 import { HttpStatusCodesRetryCondition } from './enums';
-import { EndpointNotSet } from './exceptions';
+import {
+  AuthProviderNotFound,
+  EndpointNotSet,
+  InvalidAuthOptions
+} from './exceptions';
+import { ClientBasicInterface } from './interfaces';
 import { ClientOptions, DataOptions } from './types';
 
-class ClientBasic {
+class ClientBasic implements ClientBasicInterface {
   clientOptions: ClientOptions;
   client: AxiosInstance;
+  auth: object;
   constructor(baseUrl: string, clientOptions: ClientOptions) {
     this.clientOptions = clientOptions;
+    this.auth = {};
 
     this.client = axios.create({
       baseURL: baseUrl,
@@ -47,10 +54,8 @@ class ClientBasic {
     dataOptions?: DataOptions,
     headers?: object
   ): Promise<AxiosResponse> {
-    if (this.clientOptions.authProvider) {
-      const token = await this.clientOptions.authProvider.getToken();
-      headers = { ...token, ...headers };
-    }
+    if (this.clientOptions.forceAuth) this.authentication();
+    headers = { ...this.auth, ...headers };
 
     return this.client.request({
       method: methodName,
@@ -60,6 +65,19 @@ class ClientBasic {
       params: dataOptions?.params,
       headers
     });
+  }
+
+  authentication(): any {
+    if (!this.clientOptions.authProvider) throw new AuthProviderNotFound();
+    this.clientOptions.authProvider
+      .getToken()
+      .then((response) => {
+        this.auth = response;
+        return response;
+      })
+      .catch((_error) => {
+        throw new InvalidAuthOptions();
+      });
   }
 
   /**
@@ -72,6 +90,7 @@ class ClientBasic {
    * @returns {number} The number of milliseconds to wait before retrying
    * @memberof BasicClient
    * @throws {AxiosError}
+   * @throws {InvalidAuthOptions}
    */
   retryDelay(retryCount: number, error: AxiosError): number {
     if (retryCount >= this.clientOptions.tries) throw error;
@@ -91,6 +110,8 @@ class ClientBasic {
    * @memberof BasicClient
    */
   retryCondition(error: AxiosError): boolean {
+    if (error.response.status === HttpStatusCodesRetryCondition.Unauthorized)
+      this.authentication();
     return Object.values(HttpStatusCodesRetryCondition).includes(
       error.response.status
     );
