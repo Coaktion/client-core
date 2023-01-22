@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/Coaktion/client-core/compare/v1.0.0...v1.1.0) (2023-01-22)
+
 ## [1.0.0](https://github.com/Coaktion/client-core/compare/v0.1.11...v1.0.0) (2023-01-20)
 
 ### [0.1.11](https://github.com/Coaktion/client-core/compare/v0.1.8...v0.1.11) (2023-01-20)
