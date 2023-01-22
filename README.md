@@ -1,4 +1,7 @@
 # Client Core
+![test workflow](https://github.com/Coaktion/client-core/actions/workflows/test.yml/badge.svg)
+![stale workflow](https://github.com/Coaktion/client-core/actions/workflows/stale.yml/badge.svg)
+
 
 Client Core is a libary helping you to create a client RestFul API.
 
