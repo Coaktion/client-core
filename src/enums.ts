@@ -6,6 +6,7 @@
  * @see https://www.npmjs.com/package/http-status-codes
  */
 export enum HttpStatusCodesRetryCondition {
+  Unauthorized = 401,
   RequestTimeout = 408,
   TooEarly = 425,
   TooManyRequests = 429,
@@ -26,7 +27,6 @@ export enum HttpStatusCodesRetryCondition {
  */
 export enum HtttpStatusCodeError {
   BadRequest = 400,
-  Unauthorized = 401,
   PaymentRequired = 402,
   Forbidden = 403,
   NotFound = 404,

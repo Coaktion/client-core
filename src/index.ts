@@ -7,7 +7,11 @@ export {
   DataOptions,
   defaultClientOptions
 } from './types';
-export { EndpointNotSet } from './exceptions';
+export {
+  EndpointNotSet,
+  AuthProviderNotFound,
+  InvalidAuthOptions
+} from './exceptions';
 export { HttpStatusCodesRetryCondition, HtttpStatusCodeError } from './enums';
-export { AuthBasic } from './interfaces';
+export { AuthBasic, ClientBasicInterface } from './interfaces';
 export { AuthApiKey, BasicAuth, BearerAuth } from './auth';

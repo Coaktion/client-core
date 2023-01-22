@@ -31,6 +31,7 @@
 export type ClientOptions = {
   appName: string;
   authProvider?: any;
+  forceAuth?: boolean;
   timeout?: number;
   tries?: number;
   retryDelay?: number;

@@ -1,6 +1,6 @@
-import { AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
-import { AuthOptions } from './types';
+import { AuthOptions, ClientOptions, DataOptions } from './types';
 
 /**
  * AuthBasic interface
@@ -32,4 +32,24 @@ export interface AuthBasic {
   authOptions: AuthOptions;
   client?: AxiosInstance;
   getToken(): Promise<object>;
+}
+
+export interface ClientBasicInterface {
+  clientOptions: ClientOptions;
+  client: AxiosInstance;
+  auth: object;
+  makeRequest(
+    methodName: string,
+    endpoint: string,
+    dataOptions?: DataOptions,
+    headers?: object
+  ): Promise<AxiosResponse>;
+  retryDelay(retryCount: number, error: AxiosError): number;
+  retryCondition(error: AxiosError): boolean;
+  authentication(): object;
+  search(params?: object): Promise<AxiosResponse>;
+  fetch(id: string): Promise<AxiosResponse>;
+  create(data: object): Promise<AxiosResponse>;
+  update(id: string, data: object): Promise<AxiosResponse>;
+  delete(id: string): Promise<AxiosResponse>;
 }
