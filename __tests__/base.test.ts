@@ -25,19 +25,27 @@ const endpoints = {
   update: '/users/:id'
 };
 
-const clientBasic = new ClientBasic('https://api.example.com/v1', {
-  appName: 'example',
-  authProvider: null,
-  endpoints,
-  retryDelay: 3,
-  timeout: 3000,
-  tries: 3,
-  rateLimitKey: 'Retry-After',
-  forceAuth: false
-});
-const mock = new MockAdapter(clientBasic.client);
-
 describe('ClientBasic', () => {
+  let clientBasic: ClientBasic;
+  let mock: MockAdapter;
+  beforeEach(() => {
+    clientBasic = new ClientBasic('https://api.example.com/v1', {
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      retryDelay: 3,
+      timeout: 3000,
+      tries: 3,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false
+    });
+    mock = new MockAdapter(clientBasic.client);
+  });
+
+  afterEach(() => {
+    mock.restore();
+  });
+
   it('should receive the list of objects when calling search', async () => {
     const data = [
       { id: 1, name: 'test' },
@@ -57,8 +65,6 @@ describe('ClientBasic', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(EndpointNotSet);
         expect(error.message).toEqual(`${action} endpoint is not defined`);
-      } finally {
-        clientBasic.clientOptions.endpoints = endpoints;
       }
     }
   );
@@ -100,7 +106,6 @@ describe('ClientBasic', () => {
   it.each(statusCodeRetry)(
     'should return true when calling retryCondition %i',
     async (code) => {
-      const auth = clientBasic.authentication;
       clientBasic.authentication = jest.fn();
       const axiosError = {
         config: {},
@@ -112,7 +117,6 @@ describe('ClientBasic', () => {
       if (code === 401) {
         expect(clientBasic.authentication).toHaveBeenCalled();
       }
-      clientBasic.authentication = auth;
     }
   );
 
@@ -199,14 +203,11 @@ describe('ClientBasic', () => {
   });
 
   it('should calling authentication when calling makeRequest and forceAuth is true', async () => {
-    const auth = clientBasic.authentication;
     clientBasic.authentication = jest.fn();
     clientBasic.clientOptions.forceAuth = true;
     const data = { id: 1, name: 'test' };
     mock.onGet('/users').reply(200, data);
     await clientBasic.makeRequest('get', '/users');
     expect(clientBasic.authentication).toHaveBeenCalled();
-    clientBasic.authentication = auth;
-    clientBasic.clientOptions.forceAuth = false;
   });
 });
