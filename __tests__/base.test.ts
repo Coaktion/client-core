@@ -34,7 +34,7 @@ describe('ClientBasic', () => {
       authProvider: null,
       endpoints,
       retryDelay: 3,
-      timeout: 3000,
+      timeout: 1000,
       tries: 3,
       rateLimitKey: 'Retry-After',
       forceAuth: false
@@ -209,5 +209,17 @@ describe('ClientBasic', () => {
     mock.onGet('/users').reply(200, data);
     await clientBasic.makeRequest('get', '/users');
     expect(clientBasic.authentication).toHaveBeenCalled();
+  });
+
+  it('should calling authentication when calling makeRequest return unauthorized', async () => {
+    jest.useFakeTimers();
+    clientBasic.authentication = jest.fn();
+    const data = { id: 1, name: 'test' };
+    mock.onGet('/users').reply(401, data);
+    try {
+      await clientBasic.makeRequest('get', '/users');
+    } catch (error) {
+      expect(clientBasic.authentication).toHaveBeenCalled();
+    }
   });
 });
