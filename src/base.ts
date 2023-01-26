@@ -18,6 +18,12 @@ class ClientBasic implements ClientBasicInterface {
     this.clientOptions = clientOptions;
     this.auth = {};
 
+    if (!this.clientOptions.timeout) this.clientOptions.timeout = 5000;
+    if (typeof this.clientOptions.retryDelay !== 'number')
+      this.clientOptions.retryDelay = 3;
+    if (typeof this.clientOptions.tries !== 'number')
+      this.clientOptions.tries = 0;
+
     this.client = axios.create({
       baseURL: baseUrl,
       auth: this.clientOptions.authProvider
