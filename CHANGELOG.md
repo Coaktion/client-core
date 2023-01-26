@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/Coaktion/client-core/compare/v1.1.0...v1.1.1) (2023-01-26)
+
+### Bug Fixes
+
+- tuning authentication integration ([4ab0299](https://github.com/Coaktion/client-core/commit/4ab029929553103d42c8686e78b162529ac980c0))
+
 ## [1.1.0](https://github.com/Coaktion/client-core/compare/v1.0.0...v1.1.0) (2023-01-22)
 
 ## [1.0.0](https://github.com/Coaktion/client-core/compare/v0.1.11...v1.0.0) (2023-01-20)

@@ -92,13 +92,13 @@ class ClientBasic implements ClientBasicInterface {
    * @throws {AxiosError}
    * @throws {InvalidAuthOptions}
    */
-  retryDelay(retryCount: number, error: AxiosError): number {
+  retryDelay = (retryCount: number, error: AxiosError): number => {
     if (retryCount >= this.clientOptions.tries) throw error;
     return error.response.status ===
       HttpStatusCodesRetryCondition.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
       : this.clientOptions.retryDelay * 1000;
-  }
+  };
 
   /**
    * The function to use for retry condition
@@ -109,13 +109,14 @@ class ClientBasic implements ClientBasicInterface {
    * @returns {boolean} Whether or not to retry
    * @memberof BasicClient
    */
-  retryCondition(error: AxiosError): boolean {
+  retryCondition = (error: AxiosError): boolean => {
     if (error.response.status === HttpStatusCodesRetryCondition.Unauthorized)
       this.authentication();
+
     return Object.values(HttpStatusCodesRetryCondition).includes(
       error.response.status
     );
-  }
+  };
 
   /**
    * The function to use for searching
