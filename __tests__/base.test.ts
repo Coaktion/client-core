@@ -40,10 +40,65 @@ describe('ClientBasic', () => {
       forceAuth: false
     });
     mock = new MockAdapter(clientBasic.client);
+    jest.useFakeTimers();
   });
 
   afterEach(() => {
     mock.restore();
+  });
+
+  it.each([
+    [3, undefined],
+    [0, 0],
+    [3, 3]
+  ])('default retryDelay shoud be %i when defined %o', (expected, value) => {
+    const client = new ClientBasic('https://api.example.com/v1', {
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      retryDelay: value,
+      tries: 3,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false
+    });
+
+    expect(client.clientOptions.retryDelay).toBe(expected);
+  });
+
+  it.each([
+    [0, undefined],
+    [0, 0],
+    [3, 3]
+  ])('default tries shoud be %i when defined %o', (expected, value) => {
+    const client = new ClientBasic('https://api.example.com/v1', {
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      tries: value,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false
+    });
+
+    expect(client.clientOptions.tries).toBe(expected);
+  });
+
+  it.each([
+    [5000, undefined],
+    [5000, 0],
+    [1000, 1000]
+  ])('default timeout shoud be %i when defined %o', (expected, value) => {
+    const client = new ClientBasic('https://api.example.com/v1', {
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      retryDelay: 3,
+      tries: 3,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false,
+      timeout: value
+    });
+
+    expect(client.clientOptions.timeout).toBe(expected);
   });
 
   it('should receive the list of objects when calling search', async () => {
@@ -212,7 +267,6 @@ describe('ClientBasic', () => {
   });
 
   it('should calling authentication when calling makeRequest return unauthorized', async () => {
-    jest.useFakeTimers();
     clientBasic.authentication = jest.fn();
     const data = { id: 1, name: 'test' };
     mock.onGet('/users').reply(401, data);
