@@ -30,6 +30,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Configure npm registry
+        run: npm config set '//npm.pkg.github.com/:_authToken=' "${{secrets.GITHUB_TOKEN}}"
       - name: Install Node Modules
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
