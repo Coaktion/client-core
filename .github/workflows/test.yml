@@ -31,6 +31,8 @@ jobs:
 
       - name: NPM Audit
         run: npx audit-ci
+        env:
+          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
 
       - name: Run Tests and Linting
         run: npm test
