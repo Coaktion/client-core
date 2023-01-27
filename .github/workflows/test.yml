@@ -10,7 +10,7 @@ permissions:
   contents: read
   
 env:
-  PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
+  PACKAGE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
