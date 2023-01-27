@@ -8,9 +8,9 @@ on:
       - main
 permissions:
   contents: read
-  
+
 env:
-  PACKAGE_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build:
@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-        
+
       - name: Install Node Modules
         run: npm ci
 
