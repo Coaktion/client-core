@@ -8,6 +8,9 @@ on:
       - main
 permissions:
   contents: read
+  
+env:
+  PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
 
 jobs:
   build:
@@ -26,13 +29,9 @@ jobs:
         
       - name: Install Node Modules
         run: npm ci
-        env:
-          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
 
       - name: NPM Audit
         run: npx audit-ci
-        env:
-          PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
 
       - name: Run Tests and Linting
         run: npm test
