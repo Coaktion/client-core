@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.2](https://github.com/Coaktion/client-core/compare/v1.1.1...v1.1.2) (2023-01-27)
+
+### Bug Fixes
+
+- Adding default values to clientOptions ([73f50b7](https://github.com/Coaktion/client-core/commit/73f50b73e2a1cd7d6c837e8c1844ef0c53dce67f))
+
 ### [1.1.1](https://github.com/Coaktion/client-core/compare/v1.1.0...v1.1.1) (2023-01-26)
 
 ### Bug Fixes
