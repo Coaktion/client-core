@@ -212,14 +212,20 @@ describe('ClientBasic', () => {
     }
   );
 
-  it('should throw an AxiosError when calling retryDelay with an invalid status code', () => {
-    const axiosError = new AxiosError();
-    try {
-      clientBasic.retryDelay(10, axiosError);
-    } catch (error) {
-      expect(error).toBeInstanceOf(AxiosError);
+  it.each([2, 3, 4])(
+    'should throw an AxiosError when calling retryDelay with tries equal %i and clientOptions tries equal 3',
+    (tries) => {
+      clientBasic.clientOptions.tries = 3;
+      const axiosError = new AxiosError();
+      try {
+        clientBasic.retryDelay(tries, axiosError);
+      } catch (error) {
+        if (tries !== 2) {
+          expect(error).toBeInstanceOf(AxiosError);
+        }
+      }
     }
-  });
+  );
 
   it('should throw an AuthProviderNotFound when calling authentication and authProvider is null', () => {
     clientBasic.clientOptions.authProvider = null;
