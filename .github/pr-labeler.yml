@@ -1,0 +1,5 @@
+feature: ['feature-*', 'feat-*', 'feature/*', 'feat/*']
+bugfix: ['fix-*', 'bugfix-*', 'fix/*', 'bugfix/*']
+chore: ['chore-*', 'chore/*']
+skip-changelog: ['release-*', 'release/*']
+documentation: ['documentation/*', 'doc/*']
