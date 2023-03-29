@@ -1,4 +1,6 @@
-export { ClientBasic } from './base';
+export { BaseClient } from './base';
+export { AxiosClient } from './axios';
+export { ZendeskClient } from './zendesk';
 export {
   AuthOptions,
   BearerAuthOptions,
@@ -13,5 +15,6 @@ export {
   InvalidAuthOptions
 } from './exceptions';
 export { HttpStatusCodesRetryCondition, HtttpStatusCodeError } from './enums';
-export { AuthBasic, ClientBasicInterface } from './interfaces';
+export { AuthBasic, AxiosClientInterface } from './interfaces';
 export { AuthApiKey, BasicAuth, BearerAuth } from './auth';
+export { queryParamsUrl, converterPathParamsUrl } from './utils';

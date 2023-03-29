@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 
 import {
   AuthProviderNotFound,
-  ClientBasic,
+  AxiosClient,
   EndpointNotSet,
   HttpStatusCodesRetryCondition,
   HtttpStatusCodeError,
@@ -25,11 +25,11 @@ const endpoints = {
   update: '/users/:id'
 };
 
-describe('ClientBasic', () => {
-  let clientBasic: ClientBasic;
+describe('AxiosClient', () => {
+  let clientBasic: AxiosClient;
   let mock: MockAdapter;
   beforeEach(() => {
-    clientBasic = new ClientBasic('https://api.example.com/v1', {
+    clientBasic = new AxiosClient('https://api.example.com/v1', {
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -52,7 +52,7 @@ describe('ClientBasic', () => {
     [0, 0],
     [3, 3]
   ])('default retryDelay shoud be %i when defined %o', (expected, value) => {
-    const client = new ClientBasic('https://api.example.com/v1', {
+    const client = new AxiosClient('https://api.example.com/v1', {
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -70,7 +70,7 @@ describe('ClientBasic', () => {
     [0, 0],
     [3, 3]
   ])('default tries shoud be %i when defined %o', (expected, value) => {
-    const client = new ClientBasic('https://api.example.com/v1', {
+    const client = new AxiosClient('https://api.example.com/v1', {
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -87,7 +87,7 @@ describe('ClientBasic', () => {
     [5000, 0],
     [1000, 1000]
   ])('default timeout shoud be %i when defined %o', (expected, value) => {
-    const client = new ClientBasic('https://api.example.com/v1', {
+    const client = new AxiosClient('https://api.example.com/v1', {
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -161,7 +161,6 @@ describe('ClientBasic', () => {
   it.each(statusCodeRetry)(
     'should return true when calling retryCondition %i',
     async (code) => {
-      clientBasic.authentication = jest.fn();
       const axiosError = {
         config: {},
         response: {
@@ -170,7 +169,7 @@ describe('ClientBasic', () => {
       } as AxiosError;
       expect(clientBasic.retryCondition(axiosError)).toBeTruthy();
       if (code === 401) {
-        expect(clientBasic.authentication).toHaveBeenCalled();
+        expect(await clientBasic.retryAuth).toBeTruthy();
       }
     }
   );
@@ -227,10 +226,10 @@ describe('ClientBasic', () => {
     }
   );
 
-  it('should throw an AuthProviderNotFound when calling authentication and authProvider is null', () => {
+  it('should throw an AuthProviderNotFound when calling authentication and authProvider is null', async () => {
     clientBasic.clientOptions.authProvider = null;
     try {
-      clientBasic.authentication();
+      await clientBasic.authentication();
     } catch (error) {
       expect(error).toBeInstanceOf(AuthProviderNotFound);
       expect(error.message).toEqual('Auth provider not found');
@@ -244,7 +243,7 @@ describe('ClientBasic', () => {
       }
     };
     try {
-      clientBasic.authentication();
+      await clientBasic.authentication();
     } catch (error) {
       expect(error).toBeInstanceOf(InvalidAuthOptions);
       expect(error.message).toEqual('Invalid auth options');
@@ -258,7 +257,7 @@ describe('ClientBasic', () => {
         return dataAuth;
       }
     };
-    await clientBasic.authentication();
+    await await clientBasic.authentication();
     expect(clientBasic.auth).toEqual(dataAuth);
     clientBasic.clientOptions.authProvider = null;
   });
@@ -269,17 +268,15 @@ describe('ClientBasic', () => {
     const data = { id: 1, name: 'test' };
     mock.onGet('/users').reply(200, data);
     await clientBasic.makeRequest('get', '/users');
-    expect(clientBasic.authentication).toHaveBeenCalled();
+    expect(await clientBasic.authentication).toHaveBeenCalled();
   });
 
-  it('should calling authentication when calling makeRequest return unauthorized', async () => {
+  it('should calling authentication when calling makeRequest and retryAuth is true', async () => {
     clientBasic.authentication = jest.fn();
+    clientBasic.retryAuth = true;
     const data = { id: 1, name: 'test' };
-    mock.onGet('/users').reply(401, data);
-    try {
-      await clientBasic.makeRequest('get', '/users');
-    } catch (error) {
-      expect(clientBasic.authentication).toHaveBeenCalled();
-    }
+    mock.onGet('/users').reply(200, data);
+    await clientBasic.makeRequest('get', '/users');
+    expect(await clientBasic.authentication).toHaveBeenCalled();
   });
 });

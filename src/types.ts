@@ -150,3 +150,22 @@ export type AuthOptions = {
   password?: string;
   bearer?: BearerAuthOptions;
 };
+
+export type PayloadRequestZendesk = {
+  url: string;
+  method: string;
+  pathParams?: object;
+  queryParams?: object;
+  data?: object;
+  options?: object;
+  headers?: object;
+};
+
+export type ModalProps = {
+  modalName: string;
+  modalUrl: string;
+  size: {
+    width: string;
+    height: string;
+  };
+};

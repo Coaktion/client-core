@@ -50,7 +50,7 @@ export class BearerAuth implements AuthBasic {
       const response = await this.client.request({
         method: 'post',
         url: this.authOptions.endpoint,
-        data: this.authOptions.bearer.data || {},
+        data: this.authOptions.bearer.data,
         params: this.authOptions.bearer.params || {}
       });
       return 'Bearer ' + response.data.access_token;
@@ -58,7 +58,6 @@ export class BearerAuth implements AuthBasic {
       if (error instanceof AxiosError) {
         throw error;
       }
-      throw new Error(error);
     }
   }
 
