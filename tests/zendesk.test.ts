@@ -42,38 +42,44 @@ describe('ZendeskClientBase', () => {
   });
 
   it('should call onRequesterChange when param is passed', () => {
+    const data = { requester: { id: 'requesterId' } };
     zendeskClientBase.on = jest.fn().mockImplementation((event, callback) => {
-      callback('requesterId', 'requesterId');
+      callback(data);
     });
     zendeskClientBase.onRequesterChange(fakerFn);
     expect(zendeskClientBase.on).toHaveBeenCalledWith(
       'ticket.requester.changed',
       expect.any(Function)
     );
-    expect(fakerFn).toHaveBeenCalledWith('requesterId', 'requesterId');
+    expect(fakerFn).toHaveBeenCalledWith('requesterId', data);
   });
 
   it('should call onBrandChange when param is passed', () => {
+    const data = { brand: { id: 'brandId' } };
     zendeskClientBase.on = jest.fn().mockImplementation((event, callback) => {
-      callback('brandId', 'brandId');
+      callback(data);
     });
     zendeskClientBase.onBrandChange(fakerFn);
     expect(zendeskClientBase.on).toHaveBeenCalledWith(
       'ticket.brand.changed',
       expect.any(Function)
     );
-    expect(fakerFn).toHaveBeenCalledWith('brandId', 'brandId');
+    expect(fakerFn).toHaveBeenCalledWith('brandId', data);
   });
 
-  it('should call onTicketSave when param is passed', () => {
+  it.each([
+    [{ ticket: { id: 1 } }, { id: 1 }],
+    [undefined, {}]
+  ])('should call onTicketSave when param is passed', (data, expected) => {
     zendeskClientBase.on = jest.fn().mockImplementation((event, callback) => {
-      callback({ ticket: {} });
+      callback(data);
     });
     zendeskClientBase.onTicketSave(fakerFn);
     expect(zendeskClientBase.on).toHaveBeenCalledWith(
       'ticket.save',
       expect.any(Function)
     );
+    expect(fakerFn).toHaveBeenCalledWith(expected);
   });
 
   it('should call onStatusChange when param is passed', () => {
@@ -85,6 +91,7 @@ describe('ZendeskClientBase', () => {
       'ticket.status.changed',
       expect.any(Function)
     );
+    expect(fakerFn).toHaveBeenCalledWith({ status: 'status' });
   });
 
   it.each([
