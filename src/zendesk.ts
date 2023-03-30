@@ -99,11 +99,11 @@ export class ZendeskClient
 
   /**
    * Performs ZAFClient.set()
-   * @param {String} param
+   * @param {String} setter
    * @param {data} data
    */
-  async set(param: string, data: string) {
-    return await this.client.set(param, data);
+  async set(setter: string, data: string) {
+    return await this.client.set(setter, data);
   }
 
   /**
@@ -111,18 +111,18 @@ export class ZendeskClient
    * @param {String} param
    * @param {data} data
    */
-  async trigger(param: string, callback: any) {
-    return await this.client.trigger(param, callback);
+  async trigger(trigger: string, callback: any) {
+    return await this.client.trigger(trigger, callback);
   }
 
   /**
    *
-   * @param {String} param
-   * @param {data} data
+   * @param {String} event
+   * @param {data} callback
    * @returns {Promise<*>}
    */
-  async on(param: string, callback: any) {
-    return await this.client.on(param, callback);
+  async on(event: string, callback: any) {
+    return await this.client.on(event, callback);
   }
 
   async setTicketField(ticketFieldId: string, value: string) {
