@@ -1,6 +1,10 @@
 import { BaseClient } from './base';
 import { ZendeskClientInterface } from './interfaces';
-import { ClientOptions, ModalProps, PayloadRequestZendesk } from './types';
+import {
+  ClientOptionsZendesk,
+  ModalProps,
+  PayloadRequestZendesk
+} from './types';
 import { converterPathParamsUrl, queryParamsUrl } from './utils';
 
 export class ZendeskClient
@@ -8,11 +12,13 @@ export class ZendeskClient
   implements ZendeskClientInterface
 {
   isProduction: boolean;
+  clientOptions: ClientOptionsZendesk;
 
-  constructor(client: any, clientOptions: ClientOptions) {
+  constructor(client: any, clientOptions: ClientOptionsZendesk) {
     super(clientOptions);
     this.client = client;
-    this.isProduction = false;
+    this.clientOptions = clientOptions;
+    this.isProduction = clientOptions.secure || false;
   }
 
   /**

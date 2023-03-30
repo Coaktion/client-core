@@ -39,13 +39,8 @@ export type ClientOptions = {
   endpoints: Endpoints;
 };
 
-export const defaultClientOptions: ClientOptions = {
-  appName: 'unknown',
-  timeout: 10000,
-  tries: 3,
-  retryDelay: 3,
-  rateLimitKey: 'Retry-After',
-  endpoints: {}
+export type ClientOptionsZendesk = ClientOptions & {
+  secure?: boolean;
 };
 
 /**

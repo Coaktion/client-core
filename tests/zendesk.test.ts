@@ -25,9 +25,29 @@ describe('ZendeskClientBase', () => {
     });
   });
 
-  it('should be defined', () => {
-    expect(ZendeskClient).toBeDefined();
-  });
+  it.each([
+    [undefined, false],
+    [false, false],
+    [true, true]
+  ])(
+    'construtor should be defined secure: %s',
+    (secureValue, isProductionExpected) => {
+      const instance = new ZendeskClient(mockZendeskClient, {
+        appName: 'test',
+        endpoints: {},
+        secure: secureValue
+      });
+
+      expect(instance).toBeDefined();
+      expect(instance.client).toBe(mockZendeskClient);
+      expect(instance.clientOptions).toEqual({
+        appName: 'test',
+        endpoints: {},
+        secure: secureValue
+      });
+      expect(instance.isProduction).toBe(isProductionExpected);
+    }
+  );
 
   it('should call appOnActivate when param is passed', () => {
     zendeskClientBase.on = jest.fn().mockImplementation((event, callback) => {
