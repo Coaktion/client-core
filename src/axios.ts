@@ -4,17 +4,15 @@ import axiosRetry from 'axios-retry';
 import { BaseClient } from './base';
 import { HttpStatusCodesRetryCondition } from './enums';
 import { AxiosClientInterface } from './interfaces';
-import { ClientOptions, DataOptions } from './types';
+import { ClientOptionsAxios, DataOptions } from './types';
 
 export class AxiosClient extends BaseClient implements AxiosClientInterface {
-  clientOptions: ClientOptions;
+  clientOptions: ClientOptionsAxios;
   client: AxiosInstance;
-  auth: object;
-  retryAuth: boolean;
-  constructor(baseUrl: string, clientOptions: ClientOptions) {
+
+  constructor(clientOptions: ClientOptionsAxios) {
     super(clientOptions);
     this.clientOptions = clientOptions;
-    this.auth = {};
     this.retryAuth = false;
 
     if (!this.clientOptions.timeout) this.clientOptions.timeout = 5000;
@@ -24,7 +22,7 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
       this.clientOptions.tries = 0;
 
     this.client = axios.create({
-      baseURL: baseUrl
+      baseURL: clientOptions.baseURL
     });
 
     axiosRetry(this.client, {

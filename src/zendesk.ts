@@ -14,9 +14,9 @@ export class ZendeskClient
   isProduction: boolean;
   clientOptions: ClientOptionsZendesk;
 
-  constructor(client: any, clientOptions: ClientOptionsZendesk) {
+  constructor(clientOptions: ClientOptionsZendesk) {
     super(clientOptions);
-    this.client = client;
+    this.client = clientOptions.client;
     this.clientOptions = clientOptions;
     this.isProduction = clientOptions.secure || false;
   }

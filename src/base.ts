@@ -16,6 +16,7 @@ export class BaseClient implements BaseClientInterface {
 
   constructor(clientOptions: ClientOptions) {
     this.clientOptions = clientOptions;
+    this.auth = {};
   }
 
   async makeRequest(..._args: any[]): Promise<any> {

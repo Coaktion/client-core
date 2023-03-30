@@ -29,7 +29,8 @@ describe('AxiosClient', () => {
   let clientBasic: AxiosClient;
   let mock: MockAdapter;
   beforeEach(() => {
-    clientBasic = new AxiosClient('https://api.example.com/v1', {
+    clientBasic = new AxiosClient({
+      baseURL: 'https://api.example.com/v1',
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -52,7 +53,8 @@ describe('AxiosClient', () => {
     [0, 0],
     [3, 3]
   ])('default retryDelay shoud be %i when defined %o', (expected, value) => {
-    const client = new AxiosClient('https://api.example.com/v1', {
+    const client = new AxiosClient({
+      baseURL: 'https://api.example.com/v1',
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -70,7 +72,8 @@ describe('AxiosClient', () => {
     [0, 0],
     [3, 3]
   ])('default tries shoud be %i when defined %o', (expected, value) => {
-    const client = new AxiosClient('https://api.example.com/v1', {
+    const client = new AxiosClient({
+      baseURL: 'https://api.example.com/v1',
       appName: 'example',
       authProvider: null,
       endpoints,
@@ -87,7 +90,8 @@ describe('AxiosClient', () => {
     [5000, 0],
     [1000, 1000]
   ])('default timeout shoud be %i when defined %o', (expected, value) => {
-    const client = new AxiosClient('https://api.example.com/v1', {
+    const client = new AxiosClient({
+      baseURL: 'https://api.example.com/v1',
       appName: 'example',
       authProvider: null,
       endpoints,

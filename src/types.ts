@@ -41,6 +41,11 @@ export type ClientOptions = {
 
 export type ClientOptionsZendesk = ClientOptions & {
   secure?: boolean;
+  client: any;
+};
+
+export type ClientOptionsAxios = ClientOptions & {
+  baseURL: string;
 };
 
 /**
