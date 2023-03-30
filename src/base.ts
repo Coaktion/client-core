@@ -12,6 +12,7 @@ export class BaseClient implements BaseClientInterface {
   client: any;
   clientOptions: ClientOptions;
   auth: object;
+  retryAuth: boolean;
 
   constructor(clientOptions: ClientOptions) {
     this.clientOptions = clientOptions;
@@ -25,6 +26,7 @@ export class BaseClient implements BaseClientInterface {
     if (!this.clientOptions.authProvider) throw new AuthProviderNotFound();
     try {
       this.auth = await this.clientOptions.authProvider.getToken();
+      this.retryAuth = false;
     } catch (error) {
       throw new InvalidAuthOptions();
     }

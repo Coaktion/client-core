@@ -58,10 +58,8 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
     dataOptions?: DataOptions,
     headers?: object
   ): Promise<AxiosResponse> {
-    if (this.clientOptions.forceAuth || this.retryAuth) {
+    if (this.clientOptions.forceAuth || this.retryAuth)
       await this.authentication();
-      this.retryAuth = false;
-    }
 
     headers = { ...this.auth, ...headers };
     return this.client.request({
