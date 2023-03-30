@@ -13,13 +13,6 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
   constructor(clientOptions: ClientOptionsAxios) {
     super(clientOptions);
     this.clientOptions = clientOptions;
-    this.retryAuth = false;
-
-    if (!this.clientOptions.timeout) this.clientOptions.timeout = 5000;
-    if (typeof this.clientOptions.retryDelay !== 'number')
-      this.clientOptions.retryDelay = 3;
-    if (typeof this.clientOptions.tries !== 'number')
-      this.clientOptions.tries = 0;
 
     this.client = axios.create({
       baseURL: clientOptions.baseURL

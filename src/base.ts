@@ -17,6 +17,13 @@ export class BaseClient implements BaseClientInterface {
   constructor(clientOptions: ClientOptions) {
     this.clientOptions = clientOptions;
     this.auth = {};
+    this.retryAuth = false;
+
+    if (!this.clientOptions.timeout) this.clientOptions.timeout = 5000;
+    if (typeof this.clientOptions.retryDelay !== 'number')
+      this.clientOptions.retryDelay = 3;
+    if (typeof this.clientOptions.tries !== 'number')
+      this.clientOptions.tries = 0;
   }
 
   async makeRequest(..._args: any[]): Promise<any> {

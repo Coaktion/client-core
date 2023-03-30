@@ -6,20 +6,75 @@ import {
 } from '../src';
 
 describe('BaseClient', () => {
+  const endpoints = {
+    create: '/users',
+    delete: '/users/:id',
+    fetch: '/users/:id',
+    search: '/users',
+    update: '/users/:id'
+  };
   let clientBasic: BaseClient;
   beforeEach(() => {
     clientBasic = new BaseClient({
       appName: 'example',
       authProvider: null,
-      endpoints: {
-        create: '/users',
-        delete: '/users/:id',
-        fetch: '/users/:id',
-        search: '/users',
-        update: '/users/:id'
-      }
+      endpoints
     });
     jest.useFakeTimers();
+  });
+
+  it.each([
+    [3, undefined],
+    [0, 0],
+    [3, 3]
+  ])('default retryDelay shoud be %i when defined %o', (expected, value) => {
+    const client = new BaseClient({
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      retryDelay: value,
+      tries: 3,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false
+    });
+
+    expect(client.clientOptions.retryDelay).toBe(expected);
+  });
+
+  it.each([
+    [0, undefined],
+    [0, 0],
+    [3, 3]
+  ])('default tries shoud be %i when defined %o', (expected, value) => {
+    const client = new BaseClient({
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      tries: value,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false
+    });
+
+    expect(client.clientOptions.tries).toBe(expected);
+  });
+
+  it.each([
+    [5000, undefined],
+    [5000, 0],
+    [1000, 1000]
+  ])('default timeout shoud be %i when defined %o', (expected, value) => {
+    const client = new BaseClient({
+      appName: 'example',
+      authProvider: null,
+      endpoints,
+      retryDelay: 3,
+      tries: 3,
+      rateLimitKey: 'Retry-After',
+      forceAuth: false,
+      timeout: value
+    });
+
+    expect(client.clientOptions.timeout).toBe(expected);
   });
 
   it.each(['search', 'fetch', 'create', 'update', 'delete'])(

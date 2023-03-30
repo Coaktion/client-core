@@ -46,7 +46,10 @@ describe('ZendeskClientBase', () => {
         appName: 'test',
         endpoints: {},
         secure: secureValue,
-        client: mockZendeskClient
+        client: mockZendeskClient,
+        retryDelay: 3,
+        tries: 0,
+        timeout: 5000
       });
       expect(instance.isProduction).toBe(isProductionExpected);
     }
