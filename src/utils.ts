@@ -10,3 +10,5 @@ export const converterPathParamsUrl = (url: string, params: any) => {
     return params[key] || `{${key}}`;
   });
 };
+
+export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

@@ -1,4 +1,4 @@
-import { converterPathParamsUrl, queryParamsUrl } from '../src/utils';
+import { converterPathParamsUrl, queryParamsUrl, sleep } from '../src/utils';
 
 describe('queryParamsUrl', () => {
   it.each([
@@ -41,4 +41,18 @@ describe('converterPathParamsUrl', () => {
       expect(result).toEqual(expected);
     }
   );
+
+  it('should resolve the promise after the specified time', async () => {
+    const start = Date.now();
+    const ms = 100;
+
+    await sleep(ms);
+
+    const end = Date.now();
+    const elapsed = end - start;
+
+    // Checks if the elapsed time is close to the specified time
+    expect(elapsed).toBeGreaterThanOrEqual(ms);
+    expect(elapsed).toBeLessThanOrEqual(ms + 10);
+  });
 });

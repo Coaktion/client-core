@@ -1,5 +1,5 @@
 import { PayloadRequestZendesk } from '../src/types';
-import { converterPathParamsUrl, queryParamsUrl } from '../src/utils';
+import { converterPathParamsUrl, queryParamsUrl, sleep } from '../src/utils';
 import { ZendeskClient } from '../src/zendesk';
 
 jest.mock('../src/utils');
@@ -247,10 +247,12 @@ describe('ZendeskClientBase', () => {
       method: 'method'
     };
     await zendeskClientBase.makeRequest(payload);
+    delete payload.retryCount;
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
       ...payload,
       secure: false,
-      contentType: 'application/x-www-form-urlencoded'
+      contentType: 'application/x-www-form-urlencoded',
+      httpCompleteResponse: true
     });
   });
 
@@ -277,5 +279,22 @@ describe('ZendeskClientBase', () => {
       expectedPath,
       payload.queryParams
     );
+  });
+
+  it('should call makeRequest with thorw error', async () => {
+    zendeskClientBase.retryCondition = jest.fn().mockReturnValueOnce(true);
+    zendeskClientBase.retryDelay = jest.fn().mockReturnValueOnce(100);
+    sleep as jest.Mock;
+
+    const payload: PayloadRequestZendesk = {
+      url: 'url',
+      method: 'method'
+    };
+    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce('error');
+    await zendeskClientBase.makeRequest(payload);
+
+    expect(sleep).toHaveBeenCalledWith(100);
+    expect(zendeskClientBase.retryCondition).toHaveBeenCalledWith('error');
+    expect(zendeskClientBase.retryDelay).toHaveBeenCalledWith(1, 'error');
   });
 });

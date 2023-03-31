@@ -159,6 +159,7 @@ export type PayloadRequestZendesk = {
   data?: object;
   options?: object;
   headers?: object;
+  retryCount?: number;
 };
 
 export type ModalProps = {

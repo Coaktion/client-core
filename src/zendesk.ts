@@ -5,7 +5,7 @@ import {
   ModalProps,
   PayloadRequestZendesk
 } from './types';
-import { converterPathParamsUrl, queryParamsUrl } from './utils';
+import { converterPathParamsUrl, queryParamsUrl, sleep } from './utils';
 
 export class ZendeskClient
   extends BaseClient
@@ -26,18 +26,28 @@ export class ZendeskClient
    * @returns {Promise}
    */
   async makeRequest(payload: PayloadRequestZendesk) {
+    payload.retryCount = payload.retryCount++ || 1;
     if (payload.pathParams)
       payload.url = converterPathParamsUrl(payload.url, payload.pathParams);
 
     if (payload.queryParams)
       payload.url = queryParamsUrl(payload.url, payload.queryParams);
 
-    return await this.client.request({
-      url: payload.url,
-      method: payload.method,
-      secure: this.isProduction,
-      contentType: 'application/x-www-form-urlencoded'
-    });
+    try {
+      const response = await this.client.request({
+        url: payload.url,
+        method: payload.method,
+        secure: this.isProduction,
+        contentType: 'application/x-www-form-urlencoded',
+        httpCompleteResponse: true
+      });
+      return response;
+    } catch (error) {
+      if (this.retryCondition(error)) {
+        await sleep(this.retryDelay(payload.retryCount, error));
+        this.makeRequest(payload);
+      }
+    }
   }
 
   appOnActivate(callback: any) {
