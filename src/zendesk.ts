@@ -25,7 +25,7 @@ export class ZendeskClient
    * Calls ZAF Client.request()
    * @returns {Promise}
    */
-  async makeRequest(payload: PayloadRequestZendesk) {
+  async makeRequest(payload: PayloadRequestZendesk): Promise<any> {
     payload.retryCount = payload.retryCount++ || 1;
     if (payload.pathParams)
       payload.url = converterPathParamsUrl(payload.url, payload.pathParams);
@@ -34,14 +34,13 @@ export class ZendeskClient
       payload.url = queryParamsUrl(payload.url, payload.queryParams);
 
     try {
-      const response = await this.client.request({
+      return await this.client.request({
         url: payload.url,
         method: payload.method,
         secure: this.isProduction,
         contentType: 'application/x-www-form-urlencoded',
         httpCompleteResponse: true
       });
-      return response;
     } catch (error) {
       if (this.retryCondition(error)) {
         await sleep(this.retryDelay(payload.retryCount, error));
