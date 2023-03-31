@@ -8,6 +8,7 @@ import {
 } from './exceptions';
 import { BaseClientInterface } from './interfaces';
 import { ClientOptions } from './types';
+import { converterPathParamsUrl } from './utils';
 
 export class BaseClient implements BaseClientInterface {
   client: any;
@@ -81,7 +82,7 @@ export class BaseClient implements BaseClientInterface {
     if (!this.clientOptions.endpoints.fetch) throw new EndpointNotSet('fetch');
     return this.makeRequest(
       'GET',
-      this.clientOptions.endpoints.fetch.replace(':id', id.toString())
+      converterPathParamsUrl(this.clientOptions.endpoints.fetch, { id })
     );
   }
 
@@ -127,7 +128,7 @@ export class BaseClient implements BaseClientInterface {
       throw new EndpointNotSet('update');
     return this.makeRequest(
       'PUT',
-      this.clientOptions.endpoints.update.replace(':id', id),
+      converterPathParamsUrl(this.clientOptions.endpoints.update, { id }),
       data
     );
   }
@@ -153,7 +154,7 @@ export class BaseClient implements BaseClientInterface {
       throw new EndpointNotSet('delete');
     return this.makeRequest(
       'DELETE',
-      this.clientOptions.endpoints.delete.replace(':id', id)
+      converterPathParamsUrl(this.clientOptions.endpoints.delete, { id })
     );
   }
 

@@ -8,10 +8,10 @@ import {
 describe('BaseClient', () => {
   const endpoints = {
     create: '/users',
-    delete: '/users/:id',
-    fetch: '/users/:id',
+    delete: '/users/{id}',
+    fetch: '/users/{id}',
     search: '/users',
-    update: '/users/:id'
+    update: '/users/{id}'
   };
   let clientBasic: BaseClient;
   beforeEach(() => {
