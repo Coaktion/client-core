@@ -296,5 +296,6 @@ describe('ZendeskClientBase', () => {
     expect(sleep).toHaveBeenCalledWith(100);
     expect(zendeskClientBase.retryCondition).toHaveBeenCalledWith('error');
     expect(zendeskClientBase.retryDelay).toHaveBeenCalledWith(1, 'error');
+    expect(mockZendeskClient.request).toHaveBeenCalledTimes(2);
   });
 });
