@@ -41,7 +41,9 @@ describe('converterPathParamsUrl', () => {
       expect(result).toEqual(expected);
     }
   );
+});
 
+describe('sleep', () => {
   it('should resolve the promise after the specified time', async () => {
     const start = Date.now();
     const ms = 100;
