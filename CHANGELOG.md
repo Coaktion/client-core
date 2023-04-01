@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/Coaktion/client-core/compare/v1.1.2...v1.2.0) (2023-04-01)
+
+
+### Features
+
+* Adding retry and retry delay to ZendeskClient ([05a5ac1](https://github.com/Coaktion/client-core/commit/05a5ac18db6e3ab1384d49adb4498577c40f82b8))
+* Adding workflow ([0a4280b](https://github.com/Coaktion/client-core/commit/0a4280b69de0cdfcb35a36df6bd36c8e2ac33bd4))
+* Adding Zendesk Client to libary ([c0910dc](https://github.com/Coaktion/client-core/commit/c0910dcd999417fa6bb479149db4bc0446ea1561))
+
 ### [1.1.2](https://github.com/Coaktion/client-core/compare/v1.1.1...v1.1.2) (2023-01-27)
 
 ### Bug Fixes
