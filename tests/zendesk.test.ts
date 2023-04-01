@@ -1,3 +1,4 @@
+import { ZendeskRequestError } from '../src/exceptions';
 import { PayloadRequestZendesk } from '../src/types';
 import { converterPathParamsUrl, queryParamsUrl, sleep } from '../src/utils';
 import { ZendeskClient } from '../src/zendesk';
@@ -285,17 +286,46 @@ describe('ZendeskClientBase', () => {
     zendeskClientBase.retryCondition = jest.fn().mockReturnValueOnce(true);
     zendeskClientBase.retryDelay = jest.fn().mockReturnValueOnce(100);
     sleep as jest.Mock;
+    const error = { status: 500 };
+    const instanceError = new ZendeskRequestError(error);
 
     const payload: PayloadRequestZendesk = {
       url: 'url',
       method: 'method'
     };
-    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce('error');
+    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce(error);
     await zendeskClientBase.makeRequest(payload);
 
     expect(sleep).toHaveBeenCalledWith(100);
-    expect(zendeskClientBase.retryCondition).toHaveBeenCalledWith('error');
-    expect(zendeskClientBase.retryDelay).toHaveBeenCalledWith(1, 'error');
+    expect(zendeskClientBase.retryCondition).toHaveBeenCalledWith(
+      instanceError
+    );
+    expect(zendeskClientBase.retryDelay).toHaveBeenCalledWith(1, instanceError);
     expect(mockZendeskClient.request).toHaveBeenCalledTimes(2);
   });
+
+  it.each([{}, { error: 'error' }, 'error'])(
+    'should call makeRequest with throw error response %s',
+    async (exception) => {
+      zendeskClientBase.retryCondition = jest.fn();
+      zendeskClientBase.retryDelay = jest.fn();
+      sleep as jest.Mock;
+
+      const payload: PayloadRequestZendesk = {
+        url: 'url',
+        method: 'method'
+      };
+      (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce(exception);
+      try {
+        await zendeskClientBase.makeRequest(payload);
+      } catch (error) {
+        expect(error).toStrictEqual(new Error(String(exception)));
+      }
+
+      expect(sleep).not.toHaveBeenCalled();
+      expect(zendeskClientBase.retryCondition).not.toHaveBeenCalled();
+      expect(zendeskClientBase.retryDelay).not.toHaveBeenCalled();
+      expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
+    }
+  );
 });

@@ -1,4 +1,5 @@
 import { BaseClient } from './base';
+import { ZendeskRequestError } from './exceptions';
 import { ZendeskClientInterface } from './interfaces';
 import {
   ClientOptionsZendesk,
@@ -42,8 +43,10 @@ export class ZendeskClient
         httpCompleteResponse: true
       });
     } catch (error) {
-      if (this.retryCondition(error)) {
-        await sleep(this.retryDelay(payload.retryCount, error));
+      if (!error.status) throw new Error(String(error));
+      const instanceError = new ZendeskRequestError(error);
+      if (this.retryCondition(instanceError)) {
+        await sleep(this.retryDelay(payload.retryCount, instanceError));
         this.makeRequest(payload);
       }
     }
