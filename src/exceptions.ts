@@ -31,3 +31,12 @@ export class AuthProviderNotFound extends Error {
     this.name = 'AuthProviderNotFound';
   }
 }
+
+export class ZendeskRequestError extends Error {
+  response: object;
+  constructor(message: object) {
+    super(JSON.stringify(message));
+    this.name = 'ZendeskRequestError';
+    this.response = message;
+  }
+}

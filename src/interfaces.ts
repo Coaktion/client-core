@@ -1,6 +1,12 @@
 import { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 
-import { AuthOptions, ClientOptions, DataOptions } from './types';
+import {
+  AuthOptions,
+  ClientOptions,
+  DataOptions,
+  ModalProps,
+  PayloadRequestZendesk
+} from './types';
 
 /**
  * AuthBasic interface
@@ -34,10 +40,22 @@ export interface AuthBasic {
   getToken(): Promise<object>;
 }
 
-export interface ClientBasicInterface {
+export interface BaseClientInterface {
   clientOptions: ClientOptions;
-  client: AxiosInstance;
+  client: any;
   auth: object;
+
+  makeRequest(...args: any[]): Promise<any>;
+  authentication(): Promise<void>;
+  search(params?: object): Promise<AxiosResponse | any>;
+  fetch(id: string): Promise<AxiosResponse | any>;
+  create(data: object): Promise<AxiosResponse | any>;
+  update(id: string, data: object): Promise<AxiosResponse | any>;
+  delete(id: string): Promise<AxiosResponse | any>;
+}
+export interface AxiosClientInterface extends BaseClientInterface {
+  client: AxiosInstance;
+
   makeRequest(
     methodName: string,
     endpoint: string,
@@ -46,10 +64,23 @@ export interface ClientBasicInterface {
   ): Promise<AxiosResponse>;
   retryDelay(retryCount: number, error: AxiosError): number;
   retryCondition(error: AxiosError): boolean;
-  authentication(): object;
-  search(params?: object): Promise<AxiosResponse>;
-  fetch(id: string): Promise<AxiosResponse>;
-  create(data: object): Promise<AxiosResponse>;
-  update(id: string, data: object): Promise<AxiosResponse>;
-  delete(id: string): Promise<AxiosResponse>;
+}
+
+export interface ZendeskClientInterface extends BaseClientInterface {
+  makeRequest(payload: PayloadRequestZendesk): Promise<any>;
+  appOnActivate(callback: any): void;
+  onRequesterChange(callback: any): void;
+  onBrandChange(callback: any): void;
+  onTicketSave(callback: any): void;
+  onStatusChange(callback: any): void;
+  notifyUser(message: string, type: string, durationInMs: number): void;
+  resizeFrame(appHeight: number): void;
+  invoke(action: string, ...args: any[]): Promise<any>;
+  get(getter: string): Promise<any>;
+  set(setter: string, ...args: any[]): Promise<any>;
+  trigger(param: string, ...args: any[]): Promise<any>;
+  on(event: string, callback: any): void;
+  setTicketField(fieldId: string, value: any): Promise<any>;
+  ticketFieldOption(fieldId: string, value: string): Promise<any>;
+  createModal(ModalProps: ModalProps): Promise<any>;
 }

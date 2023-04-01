@@ -39,13 +39,13 @@ export type ClientOptions = {
   endpoints: Endpoints;
 };
 
-export const defaultClientOptions: ClientOptions = {
-  appName: 'unknown',
-  timeout: 10000,
-  tries: 3,
-  retryDelay: 3,
-  rateLimitKey: 'Retry-After',
-  endpoints: {}
+export type ClientOptionsZendesk = ClientOptions & {
+  secure?: boolean;
+  client: any;
+};
+
+export type ClientOptionsAxios = ClientOptions & {
+  baseURL: string;
 };
 
 /**
@@ -149,4 +149,24 @@ export type AuthOptions = {
   username?: string;
   password?: string;
   bearer?: BearerAuthOptions;
+};
+
+export type PayloadRequestZendesk = {
+  url: string;
+  method: string;
+  pathParams?: object;
+  queryParams?: object;
+  data?: object;
+  options?: object;
+  headers?: object;
+  retryCount?: number;
+};
+
+export type ModalProps = {
+  modalName: string;
+  modalUrl: string;
+  size: {
+    width: string;
+    height: string;
+  };
 };
