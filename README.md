@@ -4,7 +4,7 @@
 ![stale workflow](https://github.com/Coaktion/client-core/actions/workflows/stale.yml/badge.svg)
 ![Release Draft workflow](https://github.com/Coaktion/client-core/actions/workflows/release-drafter.yml/badge.svg)
 
-Client Core is a libary helping you to create a client RestFul API.
+Client Core is a library helping you to create a client RestFul API.
 
 ## Installation
 
