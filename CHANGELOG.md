@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/Coaktion/client-core/compare/v1.2.0...v1.3.0) (2023-05-11)
+
+
+### Features
+
+* add npmjs.com and github.com actions ([34d1c9d](https://github.com/Coaktion/client-core/commit/34d1c9d36d7d02aa6233b21050a1b46635992188))
+* Adding config for npm publish ([d2b68ef](https://github.com/Coaktion/client-core/commit/d2b68ef8c8482f1941bcf22635fb8c392f8ca9d7))
+
+
+### Bug Fixes
+
+* **workflows:** Ajustanto o pipeline de testes para utilizar a variável NPM_TOKEN corretamente ([cc90327](https://github.com/Coaktion/client-core/commit/cc90327c8c2d625d482504933aeb19015a0feccc))
+
 ## [1.2.0](https://github.com/Coaktion/client-core/compare/v1.1.2...v1.2.0) (2023-04-01)
 
 
