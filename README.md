@@ -4,7 +4,7 @@
 ![stale workflow](https://github.com/Coaktion/client-core/actions/workflows/stale.yml/badge.svg)
 ![Release Draft workflow](https://github.com/Coaktion/client-core/actions/workflows/release-drafter.yml/badge.svg)
 
-Client Core is a libary helping you to create a client RestFul API.
+Client Core is a library helping you to create a client RestFul API.
 
 ## Installation
 
@@ -22,28 +22,22 @@ npm run generate-docs
 
 ```typescript
 import {
-  ClientBasic,
-  ClientOptions,
-  defaultClientOptions
+  AxiosClient,
+  ClientOptionsAxios,
+  converterPathParamsUrl
 } from '@coaktion/client-core';
 import { AxiosResponse } from 'axios';
 
-class ApiClient extends ClientBasic {
-  constructor(baseUrl: string, _options?: ClientOptions) {
-    super(baseUrl, {
-      ...defaultClientOptions,
-      endpoints: {
-        search: '/resources',
-        fetch: '/resources/:id',
-        create: '/resources',
-        update: '/resources/:id',
-        delete: '/resources/:id'
-      }
-    });
+class ApiClient extends AxiosClient {
+  constructor(clientOptions: ClientOptionsAxios) {
+    super(clientOptions);
   }
 
   async custom(id: string): Promise<AxiosResponse> {
-    return this.makeRequest('GET', '/resources/:id/custom'.replace(':id', id));
+    return this.makeRequest(
+      'GET',
+      converterPathParamsUrl('/resources/{id}/custom', { id })
+    );
   }
 }
 
