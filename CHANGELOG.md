@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/Coaktion/client-core/compare/v1.3.1...v1.3.2) (2023-05-24)
+
+
+### Bug Fixes
+
+* ajustando instanciacao classe Zendesk ([042c73f](https://github.com/Coaktion/client-core/commit/042c73f398f61380529e90ae1d4fa8b27a76a65e))
+
 ### [1.3.1](https://github.com/Coaktion/client-core/compare/v1.3.0...v1.3.1) (2023-05-11)
 
 ## [1.3.0](https://github.com/Coaktion/client-core/compare/v1.2.0...v1.3.0) (2023-05-11)
