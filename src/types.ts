@@ -36,7 +36,7 @@ export type ClientOptions = {
   tries?: number;
   retryDelay?: number;
   rateLimitKey?: string;
-  endpoints: Endpoints;
+  endpoints?: Endpoints;
 };
 
 export type ClientOptionsZendesk = ClientOptions & {

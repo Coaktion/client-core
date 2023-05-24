@@ -17,6 +17,7 @@ export class BaseClient implements BaseClientInterface {
   retryAuth: boolean;
 
   constructor(clientOptions: ClientOptions) {
+    clientOptions.appName = this.constructor.name
     this.clientOptions = clientOptions;
     this.auth = {};
     this.retryAuth = false;
@@ -31,6 +32,7 @@ export class BaseClient implements BaseClientInterface {
   async makeRequest(..._args: any[]): Promise<any> {
     throw new Error('Method not implemented.');
   }
+
 
   async authentication(): Promise<void> {
     if (!this.clientOptions.authProvider) throw new AuthProviderNotFound();
