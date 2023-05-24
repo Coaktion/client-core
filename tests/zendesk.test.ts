@@ -21,7 +21,6 @@ describe('ZendeskClientBase', () => {
   beforeEach(() => {
     jest.resetAllMocks();
     zendeskClientBase = new ZendeskClient({
-      appName: 'test',
       endpoints: {},
       client: mockZendeskClient
     });
@@ -35,7 +34,6 @@ describe('ZendeskClientBase', () => {
     'construtor should be defined secure: %s',
     (secureValue, isProductionExpected) => {
       const instance = new ZendeskClient({
-        appName: 'test',
         endpoints: {},
         secure: secureValue,
         client: mockZendeskClient
@@ -44,7 +42,7 @@ describe('ZendeskClientBase', () => {
       expect(instance).toBeDefined();
       expect(instance.client).toBe(mockZendeskClient);
       expect(instance.clientOptions).toEqual({
-        appName: 'test',
+        appName: instance.constructor.name,
         endpoints: {},
         secure: secureValue,
         client: mockZendeskClient,

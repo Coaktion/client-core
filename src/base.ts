@@ -17,6 +17,7 @@ export class BaseClient implements BaseClientInterface {
   retryAuth: boolean;
 
   constructor(clientOptions: ClientOptions) {
+    clientOptions.appName = this.constructor.name;
     this.clientOptions = clientOptions;
     this.auth = {};
     this.retryAuth = false;

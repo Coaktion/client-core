@@ -29,14 +29,14 @@
  * }
  */
 export type ClientOptions = {
-  appName: string;
+  appName?: string;
   authProvider?: any;
   forceAuth?: boolean;
   timeout?: number;
   tries?: number;
   retryDelay?: number;
   rateLimitKey?: string;
-  endpoints: Endpoints;
+  endpoints?: Endpoints;
 };
 
 export type ClientOptionsZendesk = ClientOptions & {
