@@ -29,7 +29,6 @@
  * }
  */
 export type ClientOptions = {
-  appName?: string;
   authProvider?: any;
   forceAuth?: boolean;
   timeout?: number;

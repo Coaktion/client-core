@@ -31,7 +31,6 @@ describe('AxiosClient', () => {
   beforeEach(() => {
     clientBasic = new AxiosClient({
       baseURL: 'https://api.example.com/v1',
-      appName: 'example',
       authProvider: null,
       endpoints,
       retryDelay: 3,

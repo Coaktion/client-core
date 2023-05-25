@@ -11,13 +11,14 @@ import { ClientOptions } from './types';
 import { converterPathParamsUrl } from './utils';
 
 export class BaseClient implements BaseClientInterface {
+  appName: string;
   client: any;
   clientOptions: ClientOptions;
   auth: object;
   retryAuth: boolean;
 
   constructor(clientOptions: ClientOptions) {
-    clientOptions.appName = this.constructor.name;
+    this.appName = this.constructor.name;
     this.clientOptions = clientOptions;
     this.auth = {};
     this.retryAuth = false;
