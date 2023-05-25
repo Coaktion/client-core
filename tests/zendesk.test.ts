@@ -41,8 +41,8 @@ describe('ZendeskClientBase', () => {
 
       expect(instance).toBeDefined();
       expect(instance.client).toBe(mockZendeskClient);
+      expect(instance.appName).toBe(instance.constructor.name);
       expect(instance.clientOptions).toEqual({
-        appName: instance.constructor.name,
         endpoints: {},
         secure: secureValue,
         client: mockZendeskClient,

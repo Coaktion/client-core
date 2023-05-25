@@ -16,7 +16,6 @@ describe('BaseClient', () => {
   let clientBasic: BaseClient;
   beforeEach(() => {
     clientBasic = new BaseClient({
-      appName: 'example',
       authProvider: null,
       endpoints
     });
@@ -29,7 +28,6 @@ describe('BaseClient', () => {
     [3, 3]
   ])('default retryDelay shoud be %i when defined %o', (expected, value) => {
     const client = new BaseClient({
-      appName: 'example',
       authProvider: null,
       endpoints,
       retryDelay: value,
@@ -47,7 +45,6 @@ describe('BaseClient', () => {
     [3, 3]
   ])('default tries shoud be %i when defined %o', (expected, value) => {
     const client = new BaseClient({
-      appName: 'example',
       authProvider: null,
       endpoints,
       tries: value,
@@ -64,7 +61,6 @@ describe('BaseClient', () => {
     [1000, 1000]
   ])('default timeout shoud be %i when defined %o', (expected, value) => {
     const client = new BaseClient({
-      appName: 'example',
       authProvider: null,
       endpoints,
       retryDelay: 3,
