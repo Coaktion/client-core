@@ -155,7 +155,8 @@ export type PayloadRequestZendesk = {
   method: string;
   pathParams?: object;
   queryParams?: object;
-  data?: object;
+  contentType?: string;
+  data?: object | string;
   options?: object;
   headers?: object;
   retryCount?: number;
