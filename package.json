@@ -26,7 +26,9 @@
     "generate-docs": "typedoc",
     "pre-commit": "npx pretty-quick --staged && npm run test",
     "pre-commit:prepare": "npx husky install",
-    "release": "standard-version && git push --follow-tags"
+    "release:major": "standard-version -- --release-as major",
+    "release:minor": "standard-version -- --release-as minor",
+    "release:patch": "standard-version -- --release-as patch"
   },
   "keywords": [
     "rest",
@@ -158,6 +160,12 @@
         "lines": 100,
         "statements": 100
       }
+    }
+  },
+  "standard-version": {
+    "skip": {
+      "commit": true,
+      "tag": true
     }
   },
   "prettier": {
