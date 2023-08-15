@@ -326,4 +326,41 @@ describe('ZendeskClientBase', () => {
       expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
     }
   );
+
+  it('should call makeRequest with the correct ContentType', async () => {
+    const expectedContentType = 'application/json';
+    const payload: PayloadRequestZendesk = {
+      url: 'url',
+      method: 'method',
+      contentType: 'application/json'
+    };
+    await zendeskClientBase.makeRequest(payload);
+    delete payload.retryCount;
+    expect(mockZendeskClient.request).toHaveBeenCalledWith({
+      ...payload,
+      secure: false,
+      contentType: expectedContentType,
+      httpCompleteResponse: true
+    });
+    expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
+  });
+
+  it('should call makeRequest with the correct data', async () => {
+    const expectedData = { id: '1' };
+    const payload: PayloadRequestZendesk = {
+      url: 'url',
+      method: 'method',
+      data: { id: '1' }
+    };
+    await zendeskClientBase.makeRequest(payload);
+    delete payload.retryCount;
+    expect(mockZendeskClient.request).toHaveBeenCalledWith({
+      ...payload,
+      secure: false,
+      data: expectedData,
+      httpCompleteResponse: true,
+      contentType: 'application/x-www-form-urlencoded'
+    });
+    expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
+  });
 });

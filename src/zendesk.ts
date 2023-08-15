@@ -39,8 +39,11 @@ export class ZendeskClient
         url: payload.url,
         method: payload.method,
         secure: this.isProduction,
-        contentType: 'application/x-www-form-urlencoded',
-        httpCompleteResponse: true
+        contentType: payload.contentType
+          ? payload.contentType
+          : 'application/x-www-form-urlencoded',
+        httpCompleteResponse: true,
+        ...(payload.data && { data: payload.data })
       });
     } catch (error) {
       if (!error.status) throw new Error(String(error));
