@@ -213,7 +213,10 @@ describe('AxiosClient', () => {
     clientBasic.clientOptions.forceAuth = true;
     const data = { id: 1, name: 'test' };
     mock.onGet('/users').reply(200, data);
-    await clientBasic.makeRequest('get', '/users');
+    await clientBasic.makeRequest({
+      method: 'get',
+      url: '/users'
+    });
     expect(await clientBasic.authentication).toHaveBeenCalled();
   });
 
@@ -222,7 +225,10 @@ describe('AxiosClient', () => {
     clientBasic.retryAuth = true;
     const data = { id: 1, name: 'test' };
     mock.onGet('/users').reply(200, data);
-    await clientBasic.makeRequest('get', '/users');
+    await clientBasic.makeRequest({
+      method: 'get',
+      url: '/users'
+    });
     expect(await clientBasic.authentication).toHaveBeenCalled();
   });
 });
