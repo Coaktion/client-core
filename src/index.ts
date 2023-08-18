@@ -5,8 +5,7 @@ export {
   AuthOptions,
   BearerAuthOptions,
   ClientOptions,
-  Endpoints,
-  DataOptions
+  Endpoints
 } from './types';
 export {
   EndpointNotSet,
