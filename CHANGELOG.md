@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/Coaktion/client-core/compare/v1.3.3...v1.4.0) (2023-08-18)
+
+
+### Features
+
+* add payload to axios request and removing unecessary DataOptions ([fa23acc](https://github.com/Coaktion/client-core/commit/fa23acc6e13e673f756761cfd3c3d92b56a454e3))
+* add searchAllPages paginations strategies helpers ([fc02b8c](https://github.com/Coaktion/client-core/commit/fc02b8c39cd58521d5d42c50396e48d7ae306d8e))
+* add searchAllPages types ([b2f3211](https://github.com/Coaktion/client-core/commit/b2f321193b8a1f7579b6099ddcdbb0e46b5b6d4c))
+* adding new payload to all request methods, added searchAllPages method and added option to pass PATCH to update method ([43916d1](https://github.com/Coaktion/client-core/commit/43916d1cd8a4a007096338e996c88dd5e043395c))
+* change payload params, added timeout and headers to Zendesk request ([6fc3e78](https://github.com/Coaktion/client-core/commit/6fc3e785856bdef9e08d45971cdca40161371567))
+
 ### [1.3.3](https://github.com/Coaktion/client-core/compare/v1.3.2...v1.3.3) (2023-08-15)
 
 
