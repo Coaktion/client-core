@@ -10,10 +10,12 @@ describe('BaseClient', () => {
     create: '/users',
     delete: '/users/{id}',
     fetch: '/users/{id}',
+    searchAllPages: '/users',
     search: '/users',
     update: '/users/{id}'
   };
   let clientBasic: BaseClient;
+
   beforeEach(() => {
     clientBasic = new BaseClient({
       authProvider: null,
@@ -73,7 +75,7 @@ describe('BaseClient', () => {
     expect(client.clientOptions.timeout).toBe(expected);
   });
 
-  it.each(['search', 'fetch', 'create', 'update', 'delete'])(
+  it.each(['search', 'searchAllPages', 'fetch', 'create', 'update', 'delete'])(
     'should throw an error when calling search with an calling %s',
     async (action: string) => {
       try {
@@ -97,35 +99,41 @@ describe('BaseClient', () => {
   it('should receive the object when calling fetch', async () => {
     clientBasic.makeRequest = jest.fn();
     await clientBasic.fetch('1');
-    expect(clientBasic.makeRequest).toHaveBeenCalledWith('GET', '/users/1');
+    expect(clientBasic.makeRequest).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/users/1'
+    });
   });
 
   it('should receive the object when calling create', async () => {
     clientBasic.makeRequest = jest.fn();
     const data = { id: 1, name: 'test' };
     await clientBasic.create(data);
-    expect(clientBasic.makeRequest).toHaveBeenCalledWith(
-      'POST',
-      '/users',
+    expect(clientBasic.makeRequest).toHaveBeenCalledWith({
+      method: 'POST',
+      url: '/users',
       data
-    );
+    });
   });
 
   it('should receive the object when calling update', async () => {
     clientBasic.makeRequest = jest.fn();
     const data = { id: 1, name: 'test' };
     await clientBasic.update('1', data);
-    expect(clientBasic.makeRequest).toHaveBeenCalledWith(
-      'PUT',
-      '/users/1',
+    expect(clientBasic.makeRequest).toHaveBeenCalledWith({
+      method: 'PUT',
+      url: '/users/1',
       data
-    );
+    });
   });
 
   it('should receive the object when calling delete', async () => {
     clientBasic.makeRequest = jest.fn();
     await clientBasic.delete('1');
-    expect(clientBasic.makeRequest).toHaveBeenCalledWith('DELETE', '/users/1');
+    expect(clientBasic.makeRequest).toHaveBeenCalledWith({
+      method: 'DELETE',
+      url: '/users/1'
+    });
   });
 
   it('should throw an AuthProviderNotFound when calling authentication and authProvider is null', async () => {
@@ -162,5 +170,65 @@ describe('BaseClient', () => {
     await await clientBasic.authentication();
     expect(clientBasic.auth).toEqual(dataAuth);
     clientBasic.clientOptions.authProvider = null;
+  });
+
+  it('should return early with fullFetched as false if there is an error in the makeRequest', async () => {
+    clientBasic.makeRequest = jest.fn();
+    (clientBasic.makeRequest as jest.Mock).mockRejectedValue(
+      new Error('Failed Request')
+    );
+
+    const result = await clientBasic.searchAllPages({
+      strategy: 'cursor',
+      paginationConfigs: { recordProperty: 'data' },
+      params: {}
+    });
+
+    expect(result).toEqual({
+      dataFetched: [],
+      fullFetched: false
+    });
+  });
+
+  it('should continue fetching while hasMore is true', async () => {
+    clientBasic.makeRequest = jest.fn();
+    (clientBasic.makeRequest as jest.Mock)
+      .mockResolvedValueOnce({ someData: 'someData', links: { next: 'next' } })
+      .mockResolvedValueOnce({ someData: 'someData2' });
+
+    const result = await clientBasic.searchAllPages({
+      strategy: 'cursor',
+      paginationConfigs: {
+        recordProperty: 'someData',
+        nextEndpoint: true,
+        cursorEndpointProperty: 'links.next'
+      },
+      params: {}
+    });
+
+    expect(result.fullFetched).toBe(true);
+    expect(result.dataFetched).toEqual(['someData', 'someData2']);
+  });
+
+  it('should continue fetching while hasMore is true and data return responseJSON', async () => {
+    clientBasic.makeRequest = jest.fn();
+    (clientBasic.makeRequest as jest.Mock)
+      .mockResolvedValueOnce({
+        responseJSON: { someData: 'someData', links: { next: 'next' } }
+      })
+      .mockResolvedValueOnce({ responseJSON: { someData: 'someData2' } });
+
+    const result = await clientBasic.searchAllPages({
+      strategy: 'cursor',
+      paginationConfigs: {
+        recordProperty: 'someData',
+        nextEndpoint: true,
+        cursorEndpointProperty: 'links.next'
+      },
+      params: {}
+    });
+
+    expect(result.fullFetched).toBe(true);
+    expect(result.dataFetched).toEqual(['someData', 'someData2']);
   });
 });

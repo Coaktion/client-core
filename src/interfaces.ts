@@ -3,8 +3,8 @@ import { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import {
   AuthOptions,
   ClientOptions,
-  DataOptions,
   ModalProps,
+  Payload,
   PayloadRequestZendesk
 } from './types';
 
@@ -50,18 +50,17 @@ export interface BaseClientInterface {
   search(params?: object): Promise<AxiosResponse | any>;
   fetch(id: string): Promise<AxiosResponse | any>;
   create(data: object): Promise<AxiosResponse | any>;
-  update(id: string, data: object): Promise<AxiosResponse | any>;
+  update(
+    id: string,
+    data: object | string,
+    method: string
+  ): Promise<AxiosResponse | any>;
   delete(id: string): Promise<AxiosResponse | any>;
 }
 export interface AxiosClientInterface extends BaseClientInterface {
   client: AxiosInstance;
 
-  makeRequest(
-    methodName: string,
-    endpoint: string,
-    dataOptions?: DataOptions,
-    headers?: object
-  ): Promise<AxiosResponse>;
+  makeRequest(data: Payload): Promise<AxiosResponse>;
   retryDelay(retryCount: number, error: AxiosError): number;
   retryCondition(error: AxiosError): boolean;
 }

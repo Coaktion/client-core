@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { AxiosError, AxiosResponse } from 'axios';
 
 import { HttpStatusCodesRetryCondition } from './enums';
@@ -7,8 +8,16 @@ import {
   InvalidAuthOptions
 } from './exceptions';
 import { BaseClientInterface } from './interfaces';
-import { ClientOptions } from './types';
-import { converterPathParamsUrl } from './utils';
+import {
+  ClientOptions,
+  SearchAllPagesProps,
+  SearchAllPagesResponse
+} from './types';
+import {
+  converterPathParamsUrl,
+  getNestedProperty,
+  getStrategies
+} from './utils';
 
 export class BaseClient implements BaseClientInterface {
   appName: string;
@@ -62,8 +71,12 @@ export class BaseClient implements BaseClientInterface {
   async search(params?: object): Promise<AxiosResponse | any> {
     if (!this.clientOptions.endpoints.search)
       throw new EndpointNotSet('search');
-    return this.makeRequest('GET', this.clientOptions.endpoints.search, {
-      params
+    return this.makeRequest({
+      method: 'GET',
+      url: this.clientOptions.endpoints.search,
+      params: {
+        params
+      }
     });
   }
 
@@ -82,10 +95,83 @@ export class BaseClient implements BaseClientInterface {
    */
   async fetch(id: string): Promise<AxiosResponse | any> {
     if (!this.clientOptions.endpoints.fetch) throw new EndpointNotSet('fetch');
-    return this.makeRequest(
-      'GET',
-      converterPathParamsUrl(this.clientOptions.endpoints.fetch, { id })
-    );
+    return this.makeRequest({
+      method: 'GET',
+      url: converterPathParamsUrl(this.clientOptions.endpoints.fetch, { id })
+    });
+  }
+
+  /**
+   * The function to use for searching all pages
+   * @description This function will search all pages of the endpoint
+   * @param {SearchAllPagesProps} props The props to use for the search
+   * @returns {Promise<SearchAllPagesResponse>} The response from the search
+   * @memberof BasicClient
+   * @throws {EndpointNotSet}
+   * @throws {AxiosError}
+   * @example
+   * const response = await client.searchAllPages({
+   *  strategy: 'cursor',
+   *  params: {
+   *    perPage: 100,
+   *    order: 'desc',
+   *  },
+   *  paginationConfigs: {
+   *   recordProperty: 'data',
+   *   nextEndpoint: true,
+   *   cursorEndpointProperty: 'links.next',
+   *  });
+   */
+
+  async searchAllPages(
+    props: SearchAllPagesProps
+  ): Promise<SearchAllPagesResponse> {
+    if (!this.clientOptions.endpoints.searchAllPages)
+      throw new EndpointNotSet('searchAllPages');
+
+    const { strategy, paginationConfigs, params } = props;
+    const strategies = getStrategies();
+
+    let endpoint = this.clientOptions.endpoints.searchAllPages;
+    let paramsAux = { ...params };
+    let allData: any[] = [];
+    let hasMore = true;
+
+    while (hasMore) {
+      let data;
+
+      try {
+        data = await this.makeRequest({
+          method: 'GET',
+          url: endpoint,
+          params: paramsAux
+        });
+      } catch (error) {
+        return { dataFetched: allData, fullFetched: false };
+      }
+
+      data = data.responseJSON ? data.responseJSON : data;
+      const recordProperty = getNestedProperty(
+        data,
+        paginationConfigs.recordProperty
+      );
+
+      const strategyData = strategies[strategy]({
+        data,
+        paginationConfigs,
+        params: paramsAux,
+        recordProperty,
+        endpoint
+      });
+
+      endpoint = strategyData.endpoint;
+      hasMore = strategyData.hasMore;
+      paramsAux = strategyData.paramsAux;
+
+      allData = allData.concat(recordProperty);
+    }
+
+    return { dataFetched: allData, fullFetched: true };
   }
 
   /**
@@ -93,7 +179,7 @@ export class BaseClient implements BaseClientInterface {
    * @description
    * If the create endpoint is not set, it will throw an error
    * Otherwise, it will make a POST request to the create endpoint
-   * @param {object} data The data to use for the create
+   * @param {object | string} data The data to use for the create
    * @returns {Promise<AxiosResponse>} The response from the create
    * @memberof BasicClient
    * @throws {EndpointNotSet}
@@ -103,10 +189,14 @@ export class BaseClient implements BaseClientInterface {
    * console.log(response.data);
    * // => { id: 1, name: 'test' }
    */
-  async create(data: object): Promise<AxiosResponse | any> {
+  async create(data: object | string): Promise<AxiosResponse | any> {
     if (!this.clientOptions.endpoints.create)
       throw new EndpointNotSet('create');
-    return this.makeRequest('POST', this.clientOptions.endpoints.create, data);
+    return this.makeRequest({
+      method: 'POST',
+      url: this.clientOptions.endpoints.create,
+      data
+    });
   }
 
   /**
@@ -115,7 +205,8 @@ export class BaseClient implements BaseClientInterface {
    * If the update endpoint is not set, it will throw an error
    * Otherwise, it will make a PUT request to the update endpoint
    * @param {string} id The ID of the item to update
-   * @param {object} data The data to use for the update
+   * @param {object | string} data The data to use for the update
+   * @param {string} [method='PUT'] The method to use for the update. Accept 'PUT' or 'PATCH'
    * @returns {Promise<AxiosResponse>} The response from the update
    * @memberof BasicClient
    * @throws {EndpointNotSet}
@@ -125,14 +216,24 @@ export class BaseClient implements BaseClientInterface {
    * console.log(response.data);
    * // => { id: 1, name: 'test' }
    */
-  async update(id: string, data: object): Promise<AxiosResponse | any> {
+  async update(
+    id: string,
+    data: object | string,
+    method = 'PUT',
+    payload?: any
+  ): Promise<AxiosResponse | any> {
     if (!this.clientOptions.endpoints.update)
       throw new EndpointNotSet('update');
-    return this.makeRequest(
-      'PUT',
-      converterPathParamsUrl(this.clientOptions.endpoints.update, { id }),
-      data
+
+    const url = String(
+      converterPathParamsUrl(this.clientOptions.endpoints.update, { id })
     );
+    return this.makeRequest({
+      method,
+      url,
+      data,
+      ...payload
+    });
   }
 
   /**
@@ -154,10 +255,10 @@ export class BaseClient implements BaseClientInterface {
   async delete(id: string): Promise<AxiosResponse | any> {
     if (!this.clientOptions.endpoints.delete)
       throw new EndpointNotSet('delete');
-    return this.makeRequest(
-      'DELETE',
-      converterPathParamsUrl(this.clientOptions.endpoints.delete, { id })
-    );
+    return this.makeRequest({
+      method: 'DELETE',
+      url: converterPathParamsUrl(this.clientOptions.endpoints.delete, { id })
+    });
   }
 
   /**

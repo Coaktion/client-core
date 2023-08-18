@@ -13,6 +13,7 @@ export class ZendeskClient
   implements ZendeskClientInterface
 {
   isProduction: boolean;
+  timeout: number;
   clientOptions: ClientOptionsZendesk;
 
   constructor(clientOptions: ClientOptionsZendesk) {
@@ -20,6 +21,7 @@ export class ZendeskClient
     this.client = clientOptions.client;
     this.clientOptions = clientOptions;
     this.isProduction = clientOptions.secure || false;
+    this.timeout = clientOptions.timeout;
   }
 
   /**
@@ -31,8 +33,8 @@ export class ZendeskClient
     if (payload.pathParams)
       payload.url = converterPathParamsUrl(payload.url, payload.pathParams);
 
-    if (payload.queryParams)
-      payload.url = queryParamsUrl(payload.url, payload.queryParams);
+    if (payload.params)
+      payload.url = queryParamsUrl(payload.url, payload.params);
 
     try {
       return await this.client.request({
@@ -43,7 +45,9 @@ export class ZendeskClient
           ? payload.contentType
           : 'application/x-www-form-urlencoded',
         httpCompleteResponse: true,
-        ...(payload.data && { data: payload.data })
+        timeout: this.timeout,
+        ...(payload.data && { data: payload.data }),
+        ...(payload.headers && { headers: payload.headers })
       });
     } catch (error) {
       if (!error.status) throw new Error(String(error));
