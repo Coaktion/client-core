@@ -250,6 +250,7 @@ describe('ZendeskClientBase', () => {
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
       ...payload,
       secure: false,
+      timeout: 5000,
       contentType: 'application/x-www-form-urlencoded',
       httpCompleteResponse: true
     });
@@ -267,17 +268,14 @@ describe('ZendeskClientBase', () => {
       pathParams: {
         pathParam: 'pathParam'
       },
-      queryParams: {
+      params: {
         limit: 10,
         sort: 'asc'
       }
     };
     await zendeskClientBase.makeRequest(payload);
     expect(converterPathParamsUrl).toHaveBeenCalled();
-    expect(queryParamsUrl).toHaveBeenCalledWith(
-      expectedPath,
-      payload.queryParams
-    );
+    expect(queryParamsUrl).toHaveBeenCalledWith(expectedPath, payload.params);
   });
 
   it('should call makeRequest with thorw error', async () => {
@@ -339,6 +337,7 @@ describe('ZendeskClientBase', () => {
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
       ...payload,
       secure: false,
+      timeout: 5000,
       contentType: expectedContentType,
       httpCompleteResponse: true
     });
@@ -359,6 +358,55 @@ describe('ZendeskClientBase', () => {
       secure: false,
       data: expectedData,
       httpCompleteResponse: true,
+      timeout: 5000,
+      contentType: 'application/x-www-form-urlencoded'
+    });
+    expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    [10000, 10000],
+    [undefined, 5000]
+  ])(
+    'construtor should be defined timeout: %s',
+    (timeoutValue, timeoutExpected) => {
+      const instance = new ZendeskClient({
+        endpoints: {},
+        client: mockZendeskClient,
+        ...(timeoutValue && { timeout: timeoutValue })
+      });
+
+      expect(instance).toBeDefined();
+      expect(instance.client).toBe(mockZendeskClient);
+      expect(instance.appName).toBe(instance.constructor.name);
+      expect(instance.clientOptions).toEqual({
+        endpoints: {},
+        client: mockZendeskClient,
+        retryDelay: 3,
+        tries: 0,
+        timeout: timeoutValue || 5000
+      });
+      expect(instance.timeout).toBe(timeoutExpected);
+    }
+  );
+
+  it('should call makeRequest with the correct header', async () => {
+    const expectedHeader = { 'Content-type': 'application/json' };
+    const payload: PayloadRequestZendesk = {
+      url: 'url',
+      method: 'method',
+      headers: { 'Content-type': 'application/json' }
+    };
+
+    await zendeskClientBase.makeRequest(payload);
+    delete payload.retryCount;
+
+    expect(mockZendeskClient.request).toHaveBeenCalledWith({
+      ...payload,
+      secure: false,
+      headers: expectedHeader,
+      httpCompleteResponse: true,
+      timeout: 5000,
       contentType: 'application/x-www-form-urlencoded'
     });
     expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
