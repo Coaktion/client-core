@@ -277,3 +277,8 @@ export type SearchAllStrategyReturn = {
   hasMore: boolean;
   paramsAux: any;
 };
+
+export type ZendeskError = {
+  status: number;
+  message: string;
+};
