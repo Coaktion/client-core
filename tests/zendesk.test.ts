@@ -282,14 +282,17 @@ describe('ZendeskClientBase', () => {
     zendeskClientBase.retryCondition = jest.fn().mockReturnValueOnce(true);
     zendeskClientBase.retryDelay = jest.fn().mockReturnValueOnce(100);
     sleep as jest.Mock;
-    const error = { status: 500 };
+    const error = { status: 500, message: 'requestError' };
     const instanceError = new ZendeskRequestError(error);
 
     const payload: PayloadRequestZendesk = {
       url: 'url',
       method: 'method'
     };
-    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce(error);
+    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce({
+      status: 500,
+      responseJSON: { message: 'requestError' }
+    });
     await zendeskClientBase.makeRequest(payload);
 
     expect(sleep).toHaveBeenCalledWith(100);
@@ -410,5 +413,23 @@ describe('ZendeskClientBase', () => {
       contentType: 'application/x-www-form-urlencoded'
     });
     expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
+  });
+
+  it('should throw ZendeskReuqestError when not on retry', async () => {
+    zendeskClientBase.retryCondition = jest.fn().mockReturnValueOnce(false);
+    const payload: PayloadRequestZendesk = {
+      url: 'url',
+      method: 'method'
+    };
+    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce({
+      status: 500,
+      responseJSON: { message: 'requestError' }
+    });
+
+    try {
+      await zendeskClientBase.makeRequest(payload);
+    } catch (error) {
+      expect(error).toEqual({ status: 500, message: 'requestError' });
+    }
   });
 });
