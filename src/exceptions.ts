@@ -1,3 +1,5 @@
+import { ZendeskError } from './types';
+
 /**
  * EndpointNotSet Error
  * @description
@@ -34,9 +36,12 @@ export class AuthProviderNotFound extends Error {
 
 export class ZendeskRequestError extends Error {
   response: object;
-  constructor(message: object) {
+  constructor(message: ZendeskError) {
     super(JSON.stringify(message));
     this.name = 'ZendeskRequestError';
-    this.response = message;
+    this.response = {
+      status: message.status,
+      message: message.message
+    };
   }
 }

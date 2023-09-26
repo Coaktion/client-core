@@ -51,10 +51,16 @@ export class ZendeskClient
       });
     } catch (error) {
       if (!error.status) throw new Error(String(error));
-      const instanceError = new ZendeskRequestError(error);
+      const instanceError = new ZendeskRequestError({
+        status: error.status,
+        message: error.responseJSON.message
+      });
+
       if (this.retryCondition(instanceError)) {
         await sleep(this.retryDelay(payload.retryCount, instanceError));
         this.makeRequest(payload);
+      } else {
+        throw instanceError.response;
       }
     }
   }

@@ -274,7 +274,8 @@ export class BaseClient implements BaseClientInterface {
    * @throws {InvalidAuthOptions}
    */
   retryDelay = (retryCount: number, error: AxiosError | any): number => {
-    if (retryCount >= this.clientOptions.tries) throw error;
+    if (retryCount >= this.clientOptions.tries)
+      throw error.response ? error.response : error;
     return error.response.status ===
       HttpStatusCodesRetryCondition.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])

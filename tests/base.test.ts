@@ -231,4 +231,14 @@ describe('BaseClient', () => {
     expect(result.fullFetched).toBe(true);
     expect(result.dataFetched).toEqual(['someData', 'someData2']);
   });
+
+  it('should throw with error response if exists on retryDelay', async () => {
+    try {
+      clientBasic.retryDelay(1, {
+        response: { status: 500, message: 'requestError' }
+      });
+    } catch (error) {
+      expect(error).toEqual({ status: 500, message: 'requestError' });
+    }
+  });
 });
