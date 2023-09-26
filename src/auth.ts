@@ -51,7 +51,8 @@ export class BearerAuth implements AuthBasic {
         method: 'post',
         url: this.authOptions.endpoint,
         data: this.authOptions.bearer.data,
-        params: this.authOptions.bearer.params || {}
+        params: this.authOptions.bearer.params || {},
+        headers: this.authOptions.bearer.headers || {}
       });
       return 'Bearer ' + response.data.access_token;
     } catch (error) {
