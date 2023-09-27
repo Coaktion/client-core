@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/Coaktion/client-core/compare/v1.4.0...v1.4.1) (2023-09-27)
+
+
+### Bug Fixes
+
+* add headers to bearer auth options ([5e669f8](https://github.com/Coaktion/client-core/commit/5e669f82e1325e61d823777551ffca38b009eafa))
+* allow basic auth for bearer auth ([270f32d](https://github.com/Coaktion/client-core/commit/270f32de5c8571e4628a558945d61e9cf3978157))
+* making the retryDelay method throw the error when it has a response key ([5b725e1](https://github.com/Coaktion/client-core/commit/5b725e10ffd77b3243e915b233478424c7075af1))
+* making ZendeskRequestError return the API error when ZafClient ([eb46b9e](https://github.com/Coaktion/client-core/commit/eb46b9e53eaef2d96d203239dd7a39296fcb2cef))
+
 ## [1.4.0](https://github.com/Coaktion/client-core/compare/v1.3.3...v1.4.0) (2023-08-18)
 
 
