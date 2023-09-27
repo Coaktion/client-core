@@ -38,7 +38,10 @@ describe('BearerAuth', () => {
       headerKey: 'Authorization',
       bearer: {
         data: {},
-        params: {}
+        params: {},
+        headers: {
+          Authorization: 'Basic 123'
+        }
       }
     });
     const mock = new MockAdapter(auth.client);
@@ -46,6 +49,9 @@ describe('BearerAuth', () => {
     expect(auth).toBeInstanceOf(BearerAuth);
     expect(auth.authOptions.baseUrl).toBe('http://localhost');
     expect(auth.authOptions.endpoint).toBe('/auth');
+    expect(auth.authOptions.bearer?.headers).toEqual({
+      Authorization: 'Basic 123'
+    });
     expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
   });
 

@@ -95,6 +95,7 @@ export type Endpoints = {
 export type BearerAuthOptions = {
   data?: object;
   params?: object;
+  headers?: object;
 };
 
 /**

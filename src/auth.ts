@@ -50,8 +50,13 @@ export class BearerAuth implements AuthBasic {
       const response = await this.client.request({
         method: 'post',
         url: this.authOptions.endpoint,
+        auth: {
+          username: this.authOptions.username,
+          password: this.authOptions.password
+        },
         data: this.authOptions.bearer.data,
-        params: this.authOptions.bearer.params || {}
+        params: this.authOptions.bearer.params || {},
+        headers: this.authOptions.bearer.headers || {}
       });
       return 'Bearer ' + response.data.access_token;
     } catch (error) {
