@@ -76,7 +76,10 @@ export class BaseClient implements BaseClientInterface {
       url: this.clientOptions.endpoints.search,
       params: {
         params
-      }
+      },
+      ...(this.clientOptions.defaultHeaders && {
+        headers: this.clientOptions.defaultHeaders
+      })
     });
   }
 
@@ -97,7 +100,10 @@ export class BaseClient implements BaseClientInterface {
     if (!this.clientOptions.endpoints.fetch) throw new EndpointNotSet('fetch');
     return this.makeRequest({
       method: 'GET',
-      url: converterPathParamsUrl(this.clientOptions.endpoints.fetch, { id })
+      url: converterPathParamsUrl(this.clientOptions.endpoints.fetch, { id }),
+      ...(this.clientOptions.defaultHeaders && {
+        headers: this.clientOptions.defaultHeaders
+      })
     });
   }
 
@@ -144,7 +150,10 @@ export class BaseClient implements BaseClientInterface {
         data = await this.makeRequest({
           method: 'GET',
           url: endpoint,
-          params: paramsAux
+          params: paramsAux,
+          ...(this.clientOptions.defaultHeaders && {
+            headers: this.clientOptions.defaultHeaders
+          })
         });
       } catch (error) {
         return { dataFetched: allData, fullFetched: false };
@@ -195,7 +204,10 @@ export class BaseClient implements BaseClientInterface {
     return this.makeRequest({
       method: 'POST',
       url: this.clientOptions.endpoints.create,
-      data
+      data,
+      ...(this.clientOptions.defaultHeaders && {
+        headers: this.clientOptions.defaultHeaders
+      })
     });
   }
 
@@ -232,6 +244,9 @@ export class BaseClient implements BaseClientInterface {
       method,
       url,
       data,
+      ...(this.clientOptions.defaultHeaders && {
+        headers: this.clientOptions.defaultHeaders
+      }),
       ...payload
     });
   }
@@ -257,7 +272,10 @@ export class BaseClient implements BaseClientInterface {
       throw new EndpointNotSet('delete');
     return this.makeRequest({
       method: 'DELETE',
-      url: converterPathParamsUrl(this.clientOptions.endpoints.delete, { id })
+      url: converterPathParamsUrl(this.clientOptions.endpoints.delete, { id }),
+      ...(this.clientOptions.defaultHeaders && {
+        headers: this.clientOptions.defaultHeaders
+      })
     });
   }
 

@@ -15,12 +15,16 @@ describe('BaseClient', () => {
     update: '/users/{id}'
   };
   let clientBasic: BaseClient;
+  let clientBasicWithDefaultHeader: BaseClient;
 
   beforeEach(() => {
-    clientBasic = new BaseClient({
-      authProvider: null,
-      endpoints
+    const baseParams = { authProvider: null, endpoints };
+    clientBasic = new BaseClient(baseParams);
+    clientBasicWithDefaultHeader = new BaseClient({
+      ...baseParams,
+      defaultHeaders: { 'X-Header': 'test' }
     });
+    clientBasicWithDefaultHeader.makeRequest = jest.fn();
     jest.useFakeTimers();
   });
 
@@ -240,5 +244,77 @@ describe('BaseClient', () => {
     } catch (error) {
       expect(error).toEqual({ status: 500, message: 'requestError' });
     }
+  });
+
+  it('should call fetch with default header', async () => {
+    await clientBasicWithDefaultHeader.fetch('1');
+    expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/users/1',
+      headers: { 'X-Header': 'test' }
+    });
+  });
+
+  it('should call search with default header', async () => {
+    await clientBasicWithDefaultHeader.search({ test: '1' });
+    expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/users',
+      params: { params: { test: '1' } },
+      headers: { 'X-Header': 'test' }
+    });
+  });
+
+  it('should call create with default header', async () => {
+    const data = { id: 1, name: 'test' };
+    await clientBasicWithDefaultHeader.create(data);
+    expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
+      method: 'POST',
+      url: '/users',
+      data,
+      headers: { 'X-Header': 'test' }
+    });
+  });
+
+  it('should call update with default header', async () => {
+    const data = { id: 1, name: 'test' };
+    await clientBasicWithDefaultHeader.update('1', data);
+    expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
+      method: 'PUT',
+      url: '/users/1',
+      data,
+      headers: { 'X-Header': 'test' }
+    });
+  });
+
+  it('should call delete with default header', async () => {
+    await clientBasicWithDefaultHeader.delete('1');
+    expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
+      method: 'DELETE',
+      url: '/users/1',
+      headers: { 'X-Header': 'test' }
+    });
+  });
+
+  it('should call searchAllPages with default header', async () => {
+    (
+      clientBasicWithDefaultHeader.makeRequest as jest.Mock
+    ).mockResolvedValueOnce({ someData: 'someData' });
+    await clientBasicWithDefaultHeader.searchAllPages({
+      strategy: 'cursor',
+      paginationConfigs: {
+        recordProperty: 'someData',
+        nextEndpoint: true,
+        cursorEndpointProperty: 'links.next'
+      },
+      params: {}
+    });
+
+    expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
+      method: 'GET',
+      url: '/users',
+      params: {},
+      headers: { 'X-Header': 'test' }
+    });
   });
 });
