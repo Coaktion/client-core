@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/Coaktion/client-core/compare/v1.4.1...v1.5.0) (2023-10-06)
+
+
+### Features
+
+* add default headers to be used on endpoints construct requests ([6f4d8d3](https://github.com/Coaktion/client-core/commit/6f4d8d31068d67fab8c83621d3b789d36276f51b))
+
 ### [1.4.1](https://github.com/Coaktion/client-core/compare/v1.4.0...v1.4.1) (2023-09-27)
 
 
