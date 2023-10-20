@@ -1,6 +1,15 @@
 import MockAdapter from 'axios-mock-adapter';
 
-import { AuthApiKey, BasicAuth, BearerAuth } from '../src/auth';
+import {
+  AuthApiKey,
+  BasicAuth,
+  BearerAuth,
+  BearerAuthZendesk
+} from '../src/auth';
+
+const mockZendeskClient = {
+  request: jest.fn()
+};
 
 describe('Auth', () => {
   it('AuthApiKey', async () => {
@@ -83,5 +92,77 @@ describe('BearerAuth', () => {
     expect(auth).toBeInstanceOf(BearerAuth);
     expect(auth.authOptions.apiKey).toBe('123');
     expect(await auth.getToken()).toEqual({ Authorization: 'Bearer 123' });
+  });
+});
+
+describe('BearerAuthZendesk', () => {
+  it('should return bearer token request server auth when calling getToken', async () => {
+    mockZendeskClient.request.mockResolvedValueOnce({
+      responseJSON: { access_token: 'sampleToken' }
+    });
+
+    const auth = new BearerAuthZendesk({
+      zafClient: mockZendeskClient,
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      bearer: {
+        headers: {
+          Authorization: 'Basic 123'
+        }
+      },
+      timeout: 1000
+    });
+    expect(auth).toBeInstanceOf(BearerAuthZendesk);
+    expect(auth.authOptions.baseUrl).toBe('http://localhost');
+    expect(auth.authOptions.endpoint).toBe('/auth');
+    expect(auth.authOptions.timeout).toBe(1000);
+    expect(auth.authOptions.bearer?.headers).toEqual({
+      Authorization: 'Basic 123'
+    });
+    expect(await auth.getToken()).toEqual({
+      Authorization: 'Bearer sampleToken'
+    });
+  });
+
+  it('should throw ZendeskRequestError error on fail', async () => {
+    mockZendeskClient.request.mockRejectedValueOnce({
+      status: 400,
+      responseJSON: { message: 'Request failed' }
+    });
+
+    const auth = new BearerAuthZendesk({
+      zafClient: mockZendeskClient,
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      bearer: {
+        headers: {
+          Authorization: 'Basic 123'
+        }
+      }
+    });
+    try {
+      await auth.getToken();
+    } catch (error) {
+      expect(error.message).toEqual('Request failed');
+    }
+  });
+
+  it('should  call getNestedProperty correctly calling getToken', async () => {
+    mockZendeskClient.request.mockResolvedValueOnce({
+      responseJSON: { test: { real_token: 'sampleToken' } }
+    });
+
+    const auth = new BearerAuthZendesk({
+      zafClient: mockZendeskClient,
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      bearer: {
+        data: {}
+      },
+      bearerTokenProperty: 'test.real_token'
+    });
+    expect(await auth.getToken()).toEqual({
+      Authorization: 'Bearer sampleToken'
+    });
   });
 });
