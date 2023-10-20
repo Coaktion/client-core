@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.1](https://github.com/Coaktion/client-core/compare/v1.5.0...v1.6.0) (2023-10-20)
+
+
+### Features
+
+* add BearerAuthZendesk auth method ([ca37f34](https://github.com/Coaktion/client-core/commit/ca37f348b4527c5e477ea3db23cd9ac700cce7e2))
+
+
+### Bug Fixes
+
+* calling authentication on makeRequest ZendeskClient ([04e3132](https://github.com/Coaktion/client-core/commit/04e31321b9840461329e8337537c2a6e471cbaf5))
+
 ## [1.5.0](https://github.com/Coaktion/client-core/compare/v1.4.1...v1.5.0) (2023-10-06)
 
 
