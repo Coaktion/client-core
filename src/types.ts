@@ -83,7 +83,7 @@ export type Endpoints = {
  * BearerAuthOptions type
  * @description Type for BearerAuthOptions
  * @typedef BearerAuthOptions
- * @property {object} [data] - The data to use for the request
+ * @property {object | string} [data] - The data to use for the request
  * @property {object} [params] - The query params to use for the request
  * @example
  * import { BearerAuthOptions } from './types';
@@ -94,7 +94,7 @@ export type Endpoints = {
  * }
  */
 export type BearerAuthOptions = {
-  data?: object;
+  data?: object | string;
   params?: object;
   headers?: object;
 };
@@ -134,6 +134,39 @@ export type AuthOptions = {
   username?: string;
   password?: string;
   bearer?: BearerAuthOptions;
+};
+
+/**
+ * AuthOptionsZendesk type
+ * @description Type for AuthOptionsZendesk
+ * @typedef AuthOptionsZendesk
+ * @property {any} [zafClient] - The zaf client to use for the request
+ * @property {number} [timeout] - The timeout to use for the request
+ * @property {boolean} [secure] - The secure to use for the request
+ * @property {string} [dataType] - The data type to use for the request
+ * @property {string} [contentType] - The content type to use for the request
+ * @property {string} [bearerTokenProperty] - The bearer token property to use for the request
+ * @example
+ * import { AuthOptionsZendesk } from './types';
+ * const authOptionsZendesk: AuthOptionsZendesk = {
+ *  zafClient: zaf.client,
+ *  baseUrl: 'http://localhost',
+ *  endpoint: '/auth',
+ *  bearer: {
+ *    headers: {
+ *      Authorization: 'Basic 123'
+ *    }
+ *  }
+ * }
+ */
+
+export type AuthOptionsZendesk = AuthOptions & {
+  zafClient: any;
+  timeout?: number;
+  secure?: boolean;
+  dataType?: string;
+  contentType?: string;
+  bearerTokenProperty?: string;
 };
 
 /**
