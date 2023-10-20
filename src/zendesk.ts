@@ -29,6 +29,11 @@ export class ZendeskClient
    * @returns {Promise}
    */
   async makeRequest(payload: PayloadRequestZendesk): Promise<any> {
+    if (this.clientOptions.forceAuth || this.retryAuth)
+      await this.authentication();
+
+    payload.headers = { ...this.auth, ...payload.headers };
+
     payload.retryCount = payload.retryCount++ || 1;
     if (payload.pathParams)
       payload.url = converterPathParamsUrl(payload.url, payload.pathParams);

@@ -432,4 +432,14 @@ describe('ZendeskClientBase', () => {
       expect(error).toEqual({ status: 500, message: 'requestError' });
     }
   });
+
+  it('should call authentication when calling makeRequest and forceAuth is true', async () => {
+    zendeskClientBase.authentication = jest.fn();
+    zendeskClientBase.clientOptions.forceAuth = true;
+    await zendeskClientBase.makeRequest({
+      method: 'get',
+      url: 'url'
+    });
+    expect(await zendeskClientBase.authentication).toHaveBeenCalled();
+  });
 });
