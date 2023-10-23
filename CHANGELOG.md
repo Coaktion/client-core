@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.2](https://github.com/Coaktion/client-core/compare/v1.5.1...v1.6.0) (2023-10-23)
+
+
+### Features
+
+* change method to type on Zendesk requests ([a78c20b](https://github.com/Coaktion/client-core/commit/a78c20b65e65a7f33b1b6b626fbf65770b7ea0e4))
+
 ## [1.5.1](https://github.com/Coaktion/client-core/compare/v1.5.0...v1.6.0) (2023-10-20)
 
 
