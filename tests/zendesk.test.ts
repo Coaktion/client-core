@@ -248,11 +248,13 @@ describe('ZendeskClientBase', () => {
     await zendeskClientBase.makeRequest(payload);
     delete payload.retryCount;
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
-      ...payload,
+      url: payload.url,
+      type: payload.method,
       secure: false,
       timeout: 5000,
       contentType: 'application/x-www-form-urlencoded',
-      httpCompleteResponse: true
+      httpCompleteResponse: true,
+      headers: {}
     });
   });
 
@@ -338,11 +340,13 @@ describe('ZendeskClientBase', () => {
     await zendeskClientBase.makeRequest(payload);
     delete payload.retryCount;
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
-      ...payload,
+      url: payload.url,
+      type: payload.method,
       secure: false,
       timeout: 5000,
       contentType: expectedContentType,
-      httpCompleteResponse: true
+      httpCompleteResponse: true,
+      headers: {}
     });
     expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
   });
@@ -357,12 +361,14 @@ describe('ZendeskClientBase', () => {
     await zendeskClientBase.makeRequest(payload);
     delete payload.retryCount;
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
-      ...payload,
+      url: payload.url,
+      type: payload.method,
       secure: false,
       data: expectedData,
       httpCompleteResponse: true,
       timeout: 5000,
-      contentType: 'application/x-www-form-urlencoded'
+      contentType: 'application/x-www-form-urlencoded',
+      headers: {}
     });
     expect(mockZendeskClient.request).toHaveBeenCalledTimes(1);
   });
@@ -405,7 +411,8 @@ describe('ZendeskClientBase', () => {
     delete payload.retryCount;
 
     expect(mockZendeskClient.request).toHaveBeenCalledWith({
-      ...payload,
+      url: payload.url,
+      type: payload.method,
       secure: false,
       headers: expectedHeader,
       httpCompleteResponse: true,

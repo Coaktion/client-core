@@ -44,7 +44,7 @@ export class ZendeskClient
     try {
       return await this.client.request({
         url: payload.url,
-        method: payload.method,
+        type: payload.method,
         secure: this.isProduction,
         contentType: payload.contentType
           ? payload.contentType
