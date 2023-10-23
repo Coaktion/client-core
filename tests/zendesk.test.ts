@@ -242,7 +242,7 @@ describe('ZendeskClientBase', () => {
 
   it('should call makeRequest with the correct', async () => {
     const payload: PayloadRequestZendesk = {
-      url: 'test',
+      url: 'url',
       method: 'method'
     };
     await zendeskClientBase.makeRequest(payload);
