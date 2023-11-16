@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.3](https://github.com/Coaktion/client-core/compare/v1.5.2...v1.6.0) (2023-11-16)
+
+
+### Features
+
+* add code quality check ([9f42611](https://github.com/Coaktion/client-core/commit/9f426117a941ba52661e52019054e6ab42900ea2))
+
+
+### Bug Fixes
+
+* fix zendesk makeRequest on catch ([26301c1](https://github.com/Coaktion/client-core/commit/26301c1af361f4260ce013657190d0a150d55446))
+
 ## [1.5.2](https://github.com/Coaktion/client-core/compare/v1.5.1...v1.6.0) (2023-10-23)
 
 
