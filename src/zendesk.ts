@@ -63,7 +63,7 @@ export class ZendeskClient
 
       if (this.retryCondition(instanceError)) {
         await sleep(this.retryDelay(payload.retryCount, instanceError));
-        this.makeRequest(payload);
+        return await this.makeRequest(payload);
       } else {
         throw instanceError.response;
       }
