@@ -45,6 +45,7 @@ export class BaseClient implements BaseClientInterface {
 
   async authentication(): Promise<void> {
     if (!this.clientOptions.authProvider) throw new AuthProviderNotFound();
+
     try {
       this.auth = await this.clientOptions.authProvider.getToken();
       this.retryAuth = false;

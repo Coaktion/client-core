@@ -1,9 +1,10 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import axiosRetry from 'axios-retry';
 
+// import axiosRetry from 'axios-retry';
 import { BaseClient } from './base';
 import { AxiosClientInterface } from './interfaces';
 import { ClientOptionsAxios, Payload } from './types';
+import { sleep } from './utils';
 
 export class AxiosClient extends BaseClient implements AxiosClientInterface {
   clientOptions: ClientOptionsAxios;
@@ -15,12 +16,6 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
 
     this.client = axios.create({
       baseURL: clientOptions.baseURL
-    });
-
-    axiosRetry(this.client, {
-      retries: this.clientOptions.tries,
-      retryDelay: this.retryDelay,
-      retryCondition: this.retryCondition
     });
   }
 
@@ -49,19 +44,36 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
     url,
     data,
     params,
-    headers
+    headers,
+    retryCount = 0
   }: Payload): Promise<AxiosResponse> {
-    if (this.clientOptions.forceAuth || this.retryAuth)
-      await this.authentication();
+    try {
+      if (this.clientOptions.forceAuth || this.retryAuth)
+        await this.authentication();
 
-    headers = { ...this.auth, ...headers };
-    return this.client.request({
-      method,
-      url,
-      timeout: this.clientOptions.timeout,
-      data,
-      params,
-      headers
-    });
+      retryCount = retryCount++;
+
+      headers = { ...this.auth, ...headers };
+      return await this.client.request({
+        method,
+        url,
+        timeout: this.clientOptions.timeout,
+        data,
+        params,
+        headers
+      });
+    } catch (e: any) {
+      if (this.retryCondition(e)) {
+        await sleep(this.retryDelay(retryCount, e));
+        return await this.makeRequest({
+          method,
+          url,
+          data,
+          params,
+          headers,
+          retryCount
+        });
+      }
+    }
   }
 }
