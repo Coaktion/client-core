@@ -194,6 +194,7 @@ export type Payload = {
   headers?: object;
   params?: object;
   data?: object | string;
+  retryCount?: number;
 };
 
 /**
@@ -211,7 +212,6 @@ export type PayloadRequestZendesk = Payload & {
   pathParams?: object;
   contentType?: string;
   options?: object;
-  retryCount?: number;
 };
 
 /**

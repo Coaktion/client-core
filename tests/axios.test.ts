@@ -231,4 +231,35 @@ describe('AxiosClient', () => {
     });
     expect(await clientBasic.authentication).toHaveBeenCalled();
   });
+
+  it('should throw an error when calling makeRequest and not retryCondition', async () => {
+    const data = { id: 1, name: 'test' };
+    mock.onGet('/users').reply(400, data);
+    try {
+      await clientBasic.makeRequest({
+        method: 'get',
+        url: '/users'
+      });
+    } catch (error) {
+      expect(error).toBeInstanceOf(AxiosError);
+    }
+  });
+
+  it('should throw an error when calling makeRequest and retryCondition', async () => {
+    jest.useRealTimers();
+
+    mock.onGet('/users').reply(500);
+    clientBasic.clientOptions.tries = 2;
+    clientBasic.retryCondition = jest.fn().mockReturnValue(true);
+    clientBasic.clientOptions.retryDelay = 0.1;
+
+    try {
+      await clientBasic.makeRequest({
+        method: 'get',
+        url: '/users'
+      });
+    } catch (error) {
+      expect(error.status).toEqual(500);
+    }
+  });
 });
