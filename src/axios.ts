@@ -1,6 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
 
-// import axiosRetry from 'axios-retry';
 import { BaseClient } from './base';
 import { AxiosClientInterface } from './interfaces';
 import { ClientOptionsAxios, Payload } from './types';
@@ -51,7 +50,7 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
       if (this.clientOptions.forceAuth || this.retryAuth)
         await this.authentication();
 
-      retryCount = retryCount++;
+      retryCount++;
 
       headers = { ...this.auth, ...headers };
       return await this.client.request({
@@ -62,18 +61,18 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
         params,
         headers
       });
-    } catch (e: any) {
-      if (this.retryCondition(e)) {
-        await sleep(this.retryDelay(retryCount, e));
-        return await this.makeRequest({
-          method,
-          url,
-          data,
-          params,
-          headers,
-          retryCount
-        });
-      }
+    } catch (error: any) {
+      if (!this.retryCondition(error)) throw error;
+
+      await sleep(this.retryDelay(retryCount, error));
+      return await this.makeRequest({
+        method,
+        url,
+        data,
+        params,
+        headers,
+        retryCount
+      });
     }
   }
 }
