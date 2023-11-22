@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.5](https://github.com/Coaktion/client-core/compare/v1.5.4...v1.5.5) (2023-11-22)
+
+
+### Bug Fixes
+
+* make request params ([5daeb67](https://github.com/Coaktion/client-core/commit/5daeb67a82a9aa5dd2592200ec01126da59599e7))
+
 ### [1.5.4](https://github.com/Coaktion/client-core/compare/v1.5.3...v1.5.4) (2023-11-22)
 
 
