@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.4](https://github.com/Coaktion/client-core/compare/v1.5.3...v1.5.4) (2023-11-22)
+
+
+### Bug Fixes
+
+* add catch to retry request ([1b20281](https://github.com/Coaktion/client-core/commit/1b202810ff96cf359491dea83b9a6d68b7a2bb5f))
+* removing axios-retry dependency ([66e4e8f](https://github.com/Coaktion/client-core/commit/66e4e8f332d8a4532f9ed87de69a3c8943a03710))
+
 ## [1.5.3](https://github.com/Coaktion/client-core/compare/v1.5.2...v1.6.0) (2023-11-16)
 
 
