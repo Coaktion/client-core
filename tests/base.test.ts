@@ -260,7 +260,7 @@ describe('BaseClient', () => {
     expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
       method: 'GET',
       url: '/users',
-      params: { params: { test: '1' } },
+      params: { test: '1' },
       headers: { 'X-Header': 'test' }
     });
   });

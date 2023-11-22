@@ -76,7 +76,7 @@ export class BaseClient implements BaseClientInterface {
       method: 'GET',
       url: this.clientOptions.endpoints.search,
       params: {
-        params
+        ...params
       },
       ...(this.clientOptions.defaultHeaders && {
         headers: this.clientOptions.defaultHeaders
