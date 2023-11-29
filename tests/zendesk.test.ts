@@ -449,4 +449,12 @@ describe('ZendeskClientBase', () => {
     });
     expect(await zendeskClientBase.authentication).toHaveBeenCalled();
   });
+
+  it('should call get with correct params when get current ticket is called', async () => {
+    zendeskClientBase.get = jest.fn().mockResolvedValueOnce({
+      ticket: {}
+    });
+    await zendeskClientBase.getCurrentTicket();
+    expect(zendeskClientBase.get).toHaveBeenCalledWith('ticket');
+  });
 });
