@@ -134,6 +134,7 @@ export type AuthOptions = {
   username?: string;
   password?: string;
   bearer?: BearerAuthOptions;
+  bearerTokenProperty?: string;
 };
 
 /**
@@ -166,7 +167,6 @@ export type AuthOptionsZendesk = AuthOptions & {
   secure?: boolean;
   dataType?: string;
   contentType?: string;
-  bearerTokenProperty?: string;
 };
 
 /**
