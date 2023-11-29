@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/Coaktion/client-core/compare/v1.5.5...v1.6.0) (2023-11-29)
+
+
+### Features
+
+* add baseBearer auth class to share the logic of bearerToken property ([a342c84](https://github.com/Coaktion/client-core/commit/a342c84dd3c2739dcf498d918fac5b0c57d78e21))
+
 ### [1.5.5](https://github.com/Coaktion/client-core/compare/v1.5.4...v1.5.5) (2023-11-22)
 
 
