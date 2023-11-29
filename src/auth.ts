@@ -37,11 +37,28 @@ export class BasicAuth implements AuthBasic {
   }
 }
 
-export class BearerAuth implements AuthBasic {
+class BaseBearerAuth {
+  authOptions: AuthOptions | AuthOptionsZendesk;
+  constructor(authOptions: AuthOptions | AuthOptionsZendesk) {
+    this.authOptions = authOptions;
+  }
+
+  async getBearerToken(response: any) {
+    return (
+      'Bearer ' +
+      (this.authOptions.bearerTokenProperty
+        ? getNestedProperty(response, this.authOptions.bearerTokenProperty)
+        : response.access_token)
+    );
+  }
+}
+
+export class BearerAuth extends BaseBearerAuth implements AuthBasic {
   authOptions: AuthOptions;
   client: AxiosInstance;
 
   constructor(authOptions: AuthOptions) {
+    super(authOptions);
     this.authOptions = authOptions;
     this.client = axios.create({
       baseURL: this.authOptions.baseUrl
@@ -61,7 +78,7 @@ export class BearerAuth implements AuthBasic {
         params: this.authOptions.bearer.params || {},
         headers: this.authOptions.bearer.headers || {}
       });
-      return 'Bearer ' + response.data.access_token;
+      return super.getBearerToken(response.data);
     } catch (error) {
       if (error instanceof AxiosError) {
         throw error;
@@ -81,11 +98,12 @@ export class BearerAuth implements AuthBasic {
   }
 }
 
-export class BearerAuthZendesk implements AuthBasic {
+export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
   authOptions: AuthOptionsZendesk;
   client: any;
 
   constructor(authOptions: AuthOptionsZendesk) {
+    super(authOptions);
     this.authOptions = authOptions;
     this.client = authOptions.zafClient;
   }
@@ -104,15 +122,7 @@ export class BearerAuthZendesk implements AuthBasic {
         headers: this.authOptions.bearer.headers || {},
         timeout: this.authOptions.timeout || 5000
       });
-      return (
-        'Bearer ' +
-        (this.authOptions.bearerTokenProperty
-          ? getNestedProperty(
-              response.responseJSON,
-              this.authOptions.bearerTokenProperty
-            )
-          : response.responseJSON.access_token)
-      );
+      return super.getBearerToken(response.responseJSON);
     } catch (error) {
       const instanceError = new ZendeskRequestError({
         status: error.status,

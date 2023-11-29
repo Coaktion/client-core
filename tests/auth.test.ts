@@ -64,6 +64,31 @@ describe('BearerAuth', () => {
     expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
   });
 
+  it('should return bearer token request server auth if bearerTokenProperty is present', async () => {
+    const auth = new BearerAuth({
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      headerKey: 'Authorization',
+      bearerTokenProperty: 'test.real_token',
+      bearer: {
+        data: {},
+        params: {},
+        headers: {
+          Authorization: 'Basic 123'
+        }
+      }
+    });
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/auth').reply(200, { test: { real_token: 'abc' } });
+    expect(auth).toBeInstanceOf(BearerAuth);
+    expect(auth.authOptions.baseUrl).toBe('http://localhost');
+    expect(auth.authOptions.endpoint).toBe('/auth');
+    expect(auth.authOptions.bearer?.headers).toEqual({
+      Authorization: 'Basic 123'
+    });
+    expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
+  });
+
   it('should throw AxiosError when calling getToken', async () => {
     const auth = new BearerAuth({
       baseUrl: 'http://localhost',
