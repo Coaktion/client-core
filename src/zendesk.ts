@@ -168,6 +168,11 @@ export class ZendeskClient
     );
   }
 
+  async getCurrentTicket() {
+    const data = await this.get('ticket');
+    return data.ticket;
+  }
+
   async ticketFieldOption(ticketFieldId: string, value: string) {
     return await this.invoke(
       `ticket.customField:custom_field_${ticketFieldId}.${value}`
