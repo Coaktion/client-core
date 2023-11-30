@@ -169,8 +169,7 @@ export class ZendeskClient
   }
 
   async getCurrentTicket() {
-    const data = await this.get('ticket');
-    return data.ticket;
+    return await this.get('ticket');
   }
 
   async ticketFieldOption(ticketFieldId: string, value: string) {
