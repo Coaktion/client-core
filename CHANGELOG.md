@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/Coaktion/client-core/compare/v1.6.0...v1.7.0) (2023-11-30)
+
+
+### Features
+
+* add get current ticket method to zendesk client ([43d5d70](https://github.com/Coaktion/client-core/commit/43d5d70f2450f3398c7f64728fbdcee35bc9f5b5))
+
 ## [1.6.0](https://github.com/Coaktion/client-core/compare/v1.5.5...v1.6.0) (2023-11-29)
 
 
