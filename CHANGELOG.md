@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.7.1](https://github.com/Coaktion/client-core/compare/v1.7.0...v1.7.1) (2023-11-30)
+
+
+### Bug Fixes
+
+* get current ticket ([3e42d9e](https://github.com/Coaktion/client-core/commit/3e42d9e2b8cd69add0610bf1f32efda5f97630c0))
+
 ## [1.7.0](https://github.com/Coaktion/client-core/compare/v1.6.0...v1.7.0) (2023-11-30)
 
 

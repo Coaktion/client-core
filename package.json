@@ -1,6 +1,6 @@
 {
   "name": "@coaktion/client-core",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Library helping you to create a client RestFul API",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
