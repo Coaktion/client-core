@@ -6,9 +6,4 @@ on:
 
 jobs:
   add-assignee:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: kentaro-m/auto-assign-action@v1.2.4
-        with:
-          configuration-path: .github/auto-assign.yml
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
+    uses: "Coaktion/aktie-devops/.github/workflows/auto-assign.yml@main"

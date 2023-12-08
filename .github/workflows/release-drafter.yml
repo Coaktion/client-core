@@ -6,13 +6,4 @@ on:
 
 jobs:
   release-drafter:
-    permissions:
-      contents: write
-      pull-requests: write
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: release-drafter/release-drafter@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    uses: "Coaktion/aktie-devops/.github/workflows/release-drafter.yml@main"
