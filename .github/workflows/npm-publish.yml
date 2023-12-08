@@ -9,4 +9,5 @@ jobs:
     uses: "Coaktion/aktie-devops/.github/workflows/npm-publish.yml@main"
     with:
       open_source: true
-    secrets: inherit
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
