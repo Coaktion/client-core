@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/Coaktion/client-core/compare/v1.7.2...v1.8.0) (2023-12-27)
+
+
+### Features
+
+* add zendesk helper methods ([60339e8](https://github.com/Coaktion/client-core/commit/60339e85c2ed118a3caee6f68124ba8867f4c4e9))
+
 ### [1.7.2](https://github.com/Coaktion/client-core/compare/v1.7.1...v1.7.2) (2023-12-08)
 
 ### [1.7.1](https://github.com/Coaktion/client-core/compare/v1.7.0...v1.7.1) (2023-11-30)
