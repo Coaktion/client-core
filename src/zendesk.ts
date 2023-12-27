@@ -4,7 +4,8 @@ import { ZendeskClientInterface } from './interfaces';
 import {
   ClientOptionsZendesk,
   ModalProps,
-  PayloadRequestZendesk
+  PayloadRequestZendesk,
+  TriggerToLocationProps
 } from './types';
 import { converterPathParamsUrl, queryParamsUrl, sleep } from './utils';
 
@@ -178,11 +179,54 @@ export class ZendeskClient
     );
   }
 
-  async createModal({ modalName, modalUrl, size }: ModalProps) {
-    return await this.invoke('instances.create', {
+  /**
+   * This method creates a modal. If data is passed, it will listen to an event from modal to set the data to it.
+   * To receive the data, you need to call the `modalReady` method in the modal.
+   */
+
+  async createModal({ modalName, modalUrl, size, data }: ModalProps) {
+    const modal = await this.invoke('instances.create', {
       location: 'modal',
       url: `${modalUrl}?modal=${modalName}`,
       size
     });
+
+    if (!data) return modal;
+
+    const instanceId = modal['instances.create'][0].instanceGuid;
+
+    const setData = async () => {
+      await this.client.instance(instanceId).trigger(`modal.setData`, data);
+      await this.client.off(`modal.ready`, setData);
+    };
+
+    this.on(`modal.ready`, setData);
+  }
+
+  /**
+   * This method triggers an event to all instances when the modal is ready to receive data.
+   * So you can get the data passed thorugh the `createModal` method.
+   */
+
+  async modalReady() {
+    await this.triggerToLocations({
+      event: `modal.ready`,
+      locations: ['nav_bar', 'ticket_sidebar', 'top_bar']
+    });
+  }
+
+  /**
+   * This method is used to trigger an event to a different location from the current one.
+   * For example, if you are in the modal and want to trigger an event in the sidebar.
+   */
+
+  async triggerToLocations({ event, data, locations }: TriggerToLocationProps) {
+    const instances = await this.get('instances');
+
+    for (const instanceId in instances) {
+      if (locations.includes(instances[instanceId].location)) {
+        await this.client.instance(instanceId).trigger(event, data);
+      }
+    }
   }
 }

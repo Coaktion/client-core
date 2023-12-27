@@ -228,10 +228,23 @@ export type PayloadRequestZendesk = Payload & {
 export type ModalProps = {
   modalName: string;
   modalUrl: string;
+  data?: any;
   size: {
     width: string;
     height: string;
   };
+};
+
+export type InstanceLocations =
+  | 'ticket_sidebar'
+  | 'nav_bar'
+  | 'modal'
+  | 'top_bar';
+
+export type TriggerToLocationProps = {
+  event: string;
+  data?: any;
+  locations: InstanceLocations[];
 };
 
 /**

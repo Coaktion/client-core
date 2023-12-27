@@ -11,7 +11,9 @@ const mockZendeskClient = {
   request: jest.fn(),
   get: jest.fn(),
   set: jest.fn(),
-  trigger: jest.fn()
+  trigger: jest.fn(),
+  off: jest.fn(),
+  instance: jest.fn()
 };
 
 const fakerFn = jest.fn();
@@ -216,28 +218,93 @@ describe('ZendeskClientBase', () => {
     }
   );
 
-  it('should call createModal with the correct params', async () => {
-    const modal = {
-      modalName: 'modalName',
-      modalUrl: 'modalUrl',
-      size: {
-        width: 'width',
-        height: 'height'
-      }
-    };
-    await zendeskClientBase.createModal(modal);
-    expect(mockZendeskClient.invoke).toHaveBeenCalledWith(
-      'instances.create',
-      {
-        location: 'modal',
-        url: `${modal.modalUrl}?modal=${modal.modalName}`,
-        size: {
-          width: modal.size.width,
-          height: modal.size.height
-        }
-      },
-      undefined
-    );
+  describe('create modal', () => {
+    describe('when "data" is not present', () => {
+      it('should call createModal with the correct params', async () => {
+        const modal = {
+          modalName: 'modalName',
+          modalUrl: 'modalUrl',
+          size: {
+            width: 'width',
+            height: 'height'
+          }
+        };
+        await zendeskClientBase.createModal(modal);
+        expect(mockZendeskClient.invoke).toHaveBeenCalledWith(
+          'instances.create',
+          {
+            location: 'modal',
+            url: `${modal.modalUrl}?modal=${modal.modalName}`,
+            size: {
+              width: modal.size.width,
+              height: modal.size.height
+            }
+          },
+          undefined
+        );
+      });
+    });
+
+    describe('when "data" is present', () => {
+      it('should call createModal with the correct params', async () => {
+        mockZendeskClient.on = jest
+          .fn()
+          .mockImplementation((event, callback) => {
+            callback();
+          });
+        mockZendeskClient.invoke.mockResolvedValueOnce({
+          'instances.create': [
+            {
+              instanceGuid: 'id123'
+            }
+          ]
+        });
+
+        const instanceTriggerMock = jest.fn();
+
+        mockZendeskClient.instance.mockReturnValueOnce({
+          trigger: instanceTriggerMock
+        });
+
+        const modal = {
+          modalName: 'modalName',
+          modalUrl: 'modalUrl',
+          size: {
+            width: 'width',
+            height: 'height'
+          },
+          data: {
+            test: 'data'
+          }
+        };
+        await zendeskClientBase.createModal(modal);
+        expect(mockZendeskClient.invoke).toHaveBeenCalledWith(
+          'instances.create',
+          {
+            location: 'modal',
+            url: `${modal.modalUrl}?modal=${modal.modalName}`,
+            size: {
+              width: modal.size.width,
+              height: modal.size.height
+            }
+          },
+          undefined
+        );
+        expect(mockZendeskClient.on).toHaveBeenCalledWith(
+          'modal.ready',
+          expect.any(Function)
+        );
+        expect(mockZendeskClient.instance).toHaveBeenCalledWith('id123');
+        expect(instanceTriggerMock).toHaveBeenCalledWith(
+          'modal.setData',
+          modal.data
+        );
+        expect(mockZendeskClient.off).toHaveBeenCalledWith(
+          'modal.ready',
+          expect.any(Function)
+        );
+      });
+    });
   });
 
   it('should call makeRequest with the correct', async () => {
@@ -456,5 +523,46 @@ describe('ZendeskClientBase', () => {
     });
     await zendeskClientBase.getCurrentTicket();
     expect(zendeskClientBase.get).toHaveBeenCalledWith('ticket');
+  });
+
+  it('should call triggerToLocations with correct params when modalReady is called', async () => {
+    zendeskClientBase.triggerToLocations = jest.fn();
+
+    await zendeskClientBase.modalReady();
+
+    expect(zendeskClientBase.triggerToLocations).toHaveBeenCalledWith({
+      event: 'modal.ready',
+      locations: ['nav_bar', 'ticket_sidebar', 'top_bar']
+    });
+  });
+
+  it('should call trigger with correct params when triggerToLocations is called', async () => {
+    const triggerMock = jest.fn();
+
+    mockZendeskClient.get.mockResolvedValueOnce({
+      instances: {
+        id123: {
+          location: 'nav_bar'
+        },
+        id456: {
+          location: 'ticket_sidebar'
+        }
+      }
+    });
+
+    mockZendeskClient.instance.mockReturnValue({
+      trigger: triggerMock
+    });
+
+    await zendeskClientBase.triggerToLocations({
+      event: 'event',
+      locations: ['nav_bar', 'ticket_sidebar']
+    });
+
+    expect(mockZendeskClient.get).toHaveBeenCalledWith('instances');
+    expect(mockZendeskClient.instance).toHaveBeenCalledWith('id123');
+    expect(mockZendeskClient.instance).toHaveBeenCalledWith('id456');
+    expect(triggerMock).toHaveBeenCalledWith('event', undefined);
+    expect(triggerMock).toHaveBeenCalledTimes(2);
   });
 });
