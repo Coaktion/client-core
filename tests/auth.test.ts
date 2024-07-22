@@ -216,7 +216,10 @@ describe('BearerAuthZendesk', () => {
 
     expect(mockZendeskClient.request).toBeCalledWith(
       expect.objectContaining({
-        data: JSON.stringify({ content: ['content'] })
+        data: JSON.stringify({ content: ['content'] }),
+        headers: {
+          'content-type': ContentTypes.JSON
+        }
       })
     );
   });
@@ -245,7 +248,8 @@ describe('BearerAuthZendesk', () => {
 
     expect(mockZendeskClient.request).toBeCalledWith(
       expect.objectContaining({
-        data: { content: ['content'] }
+        data: { content: ['content'] },
+        headers: { 'content-type': ContentTypes.X_URL_ENCODED }
       })
     );
   });
