@@ -6,6 +6,7 @@ import {
   BearerAuth,
   BearerAuthZendesk
 } from '../src/auth';
+import { ContentTypes } from '../src/enums';
 
 const mockZendeskClient = {
   request: jest.fn()
@@ -189,5 +190,63 @@ describe('BearerAuthZendesk', () => {
     expect(await auth.getToken()).toEqual({
       Authorization: 'Bearer sampleToken'
     });
+  });
+
+  it('should format data correctly based on content type header is JSON', async () => {
+    const mockZendeskClient = {
+      request: jest.fn(() => {
+        return { responseJSON: { test: { real_token: 'sampleToken' } } };
+      })
+    };
+
+    const auth = new BearerAuthZendesk({
+      zafClient: mockZendeskClient,
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      bearer: {
+        data: { content: ['content'] },
+        headers: {
+          'content-type': ContentTypes.JSON
+        }
+      },
+      bearerTokenProperty: 'test.real_token'
+    });
+
+    await auth.getBearerToken();
+
+    expect(mockZendeskClient.request).toBeCalledWith(
+      expect.objectContaining({
+        data: JSON.stringify({ content: ['content'] })
+      })
+    );
+  });
+
+  it('should format data correctly based on content type header is NOT json', async () => {
+    const mockZendeskClient = {
+      request: jest.fn(() => {
+        return { responseJSON: { test: { real_token: 'sampleToken' } } };
+      })
+    };
+
+    const auth = new BearerAuthZendesk({
+      zafClient: mockZendeskClient,
+      baseUrl: 'http://localhost',
+      endpoint: '/auth',
+      bearer: {
+        data: { content: ['content'] },
+        headers: {
+          'content-type': ContentTypes.X_URL_ENCODED
+        }
+      },
+      bearerTokenProperty: 'test.real_token'
+    });
+
+    await auth.getBearerToken();
+
+    expect(mockZendeskClient.request).toBeCalledWith(
+      expect.objectContaining({
+        data: { content: ['content'] }
+      })
+    );
   });
 });

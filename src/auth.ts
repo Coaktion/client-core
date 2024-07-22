@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
+import { ContentTypes } from './enums';
 import { ZendeskRequestError } from './exceptions';
 import { AuthBasic } from './interfaces';
 import { AuthOptions, AuthOptionsZendesk } from './types';
-import { getNestedProperty } from './utils';
+import { getHeaderContentType, getNestedProperty } from './utils';
 
 export class AuthApiKey implements AuthBasic {
   authOptions: AuthOptions;
@@ -117,8 +118,14 @@ export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
         dataType: this.authOptions.dataType || 'json',
         httpCompleteResponse: true,
         contentType:
-          this.authOptions.contentType || 'application/x-www-form-urlencoded',
-        data: JSON.stringify(this.authOptions.bearer.data),
+          getHeaderContentType(this.authOptions.bearer.headers) ||
+          this.authOptions.contentType ||
+          'application/x-www-form-urlencoded',
+        data:
+          getHeaderContentType(this.authOptions.bearer.headers) ===
+          ContentTypes.JSON
+            ? JSON.stringify(this.authOptions.bearer.data)
+            : this.authOptions.bearer.data,
         headers: this.authOptions.bearer.headers || {},
         timeout: this.authOptions.timeout || 5000
       });
