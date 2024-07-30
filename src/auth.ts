@@ -133,9 +133,7 @@ export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
     } catch (error) {
       const instanceError = new ZendeskRequestError({
         status: error.status,
-        message: error.responseJSON.message
-          ? error.responseJSON.message
-          : null
+        message: error.responseJSON.message ? error.responseJSON.message : null
       });
 
       throw instanceError.response;
