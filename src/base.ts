@@ -295,7 +295,7 @@ export class BaseClient implements BaseClientInterface {
   retryDelay = (retryCount: number, error: AxiosError | any): number => {
     if (retryCount >= this.clientOptions.tries)
       throw error.response ? error.response : error;
-    return error.response.status ===
+    return error?.response?.status ===
       HttpStatusCodesRetryCondition.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
       : this.clientOptions.retryDelay * 1000;
@@ -311,11 +311,11 @@ export class BaseClient implements BaseClientInterface {
    * @memberof BasicClient
    */
   retryCondition = (error: AxiosError | any): boolean => {
-    if (error.response.status === HttpStatusCodesRetryCondition.Unauthorized)
+    if (error?.response?.status === HttpStatusCodesRetryCondition.Unauthorized)
       this.retryAuth = true;
 
     return Object.values(HttpStatusCodesRetryCondition).includes(
-      error.response.status
+      error?.response?.status
     );
   };
 }
