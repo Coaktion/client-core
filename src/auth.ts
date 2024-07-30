@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
+import { ContentTypes } from './enums';
 import { ZendeskRequestError } from './exceptions';
 import { AuthBasic } from './interfaces';
 import { AuthOptions, AuthOptionsZendesk } from './types';
-import { getNestedProperty } from './utils';
+import { getHeaderContentType, getNestedProperty } from './utils';
 
 export class AuthApiKey implements AuthBasic {
   authOptions: AuthOptions;
@@ -110,15 +111,21 @@ export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
 
   async getBearerToken(): Promise<string> {
     try {
+      const contentType =
+        getHeaderContentType(this.authOptions.bearer.headers) ||
+        this.authOptions.contentType;
+
       const response = await this.client.request({
         type: 'POST',
         url: `${this.authOptions.baseUrl}${this.authOptions.endpoint}`,
         secure: this.authOptions.secure || false,
         dataType: this.authOptions.dataType || 'json',
         httpCompleteResponse: true,
-        contentType:
-          this.authOptions.contentType || 'application/x-www-form-urlencoded',
-        data: JSON.stringify(this.authOptions.bearer.data),
+        contentType: contentType || ContentTypes.X_URL_ENCODED,
+        data:
+          contentType === ContentTypes.JSON
+            ? JSON.stringify(this.authOptions.bearer.data)
+            : this.authOptions.bearer.data,
         headers: this.authOptions.bearer.headers || {},
         timeout: this.authOptions.timeout || 5000
       });
@@ -127,6 +134,8 @@ export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
       const instanceError = new ZendeskRequestError({
         status: error.status,
         message: error.responseJSON.message
+          ? error.responseJSON.message
+          : null
       });
 
       throw instanceError.response;

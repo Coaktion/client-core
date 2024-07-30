@@ -60,6 +60,8 @@ export class ZendeskClient
       const instanceError = new ZendeskRequestError({
         status: error.status,
         message: error.responseJSON.message
+          ? error.responseJSON.message
+          : null
       });
 
       if (this.retryCondition(instanceError)) {

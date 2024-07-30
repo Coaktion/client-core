@@ -59,3 +59,8 @@ export enum HtttpStatusCodeError {
   NotExtended = 510,
   NetworkAuthenticationRequired = 511
 }
+
+export enum ContentTypes {
+  JSON = 'application/json',
+  X_URL_ENCODED = 'application/x-www-form-urlencoded'
+}

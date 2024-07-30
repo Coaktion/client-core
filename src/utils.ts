@@ -103,3 +103,13 @@ export const getStrategies = () => {
 
   return strategies;
 };
+
+export const getHeaderContentType = (headers: object): string | null => {
+  if (!headers) return null;
+
+  const contentTypeKey = Object.keys(headers).find(
+    (key) => key.toLocaleLowerCase() === 'content-type'
+  );
+
+  return headers[contentTypeKey] || null;
+};
