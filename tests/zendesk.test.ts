@@ -507,6 +507,24 @@ describe('ZendeskClientBase', () => {
     }
   });
 
+  it('should throw ZendeskReuqestError when doesnt have a default error message attribute name', async () => {
+    zendeskClientBase.retryCondition = jest.fn().mockReturnValueOnce(false);
+    const payload: PayloadRequestZendesk = {
+      url: 'url',
+      method: 'method'
+    };
+    (mockZendeskClient.request as jest.Mock).mockRejectedValueOnce({
+      status: 500,
+      responseJSON: { msg: 'requestError' }
+    });
+
+    try {
+      await zendeskClientBase.makeRequest(payload);
+    } catch (error) {
+      expect(error).toEqual({ status: 500, message: null });
+    }
+  });
+
   it('should call authentication when calling makeRequest and forceAuth is true', async () => {
     zendeskClientBase.authentication = jest.fn();
     zendeskClientBase.clientOptions.forceAuth = true;

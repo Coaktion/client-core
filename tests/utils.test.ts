@@ -1,6 +1,8 @@
+import { ContentTypes } from '../src/enums';
 import {
   converterPathParamsUrl,
   cursorStrategy,
+  getHeaderContentType,
   getNestedProperty,
   getStrategies,
   offsetStrategy,
@@ -356,5 +358,21 @@ describe('getStrategies', () => {
     expect(keys).toContain('cursor');
     expect(keys).toContain('page');
     expect(keys).toContain('offset');
+  });
+});
+
+describe('getHeaderContentType', () => {
+  it('should return an object with the specified header content type', () => {
+    const json = getHeaderContentType({
+      'content-type': ContentTypes.JSON,
+      'other-headers': '123456789'
+    });
+    const encoded = getHeaderContentType({
+      'other-headers': '123456789',
+      'Content-Type': ContentTypes.X_URL_ENCODED
+    });
+
+    expect(json).toBe(ContentTypes.JSON);
+    expect(encoded).toBe(ContentTypes.X_URL_ENCODED);
   });
 });
