@@ -189,11 +189,11 @@ describe('BearerAuthZendesk', () => {
         }
       }
     });
-    try {
-      await auth.getToken();
-    } catch (error) {
-      expect(error.message).toEqual(null);
-    }
+
+    await expect(auth.getToken()).rejects.toEqual({
+      message: null,
+      status: 400
+    });
   });
 
   it('should  call getNestedProperty correctly calling getToken', async () => {
