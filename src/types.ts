@@ -1,3 +1,5 @@
+import https from 'https';
+
 /**
  * ClientOptions type
  * @description Type for ClientOptions
@@ -46,6 +48,7 @@ export type ClientOptionsZendesk = ClientOptions & {
 
 export type ClientOptionsAxios = ClientOptions & {
   baseURL: string;
+  httpsAgent?: https.Agent;
 };
 
 /**
@@ -135,6 +138,7 @@ export type AuthOptions = {
   password?: string;
   bearer?: BearerAuthOptions;
   bearerTokenProperty?: string;
+  httpsAgent?: https.Agent;
 };
 
 /**

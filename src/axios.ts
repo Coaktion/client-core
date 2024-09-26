@@ -14,7 +14,8 @@ export class AxiosClient extends BaseClient implements AxiosClientInterface {
     this.clientOptions = clientOptions;
 
     this.client = axios.create({
-      baseURL: clientOptions.baseURL
+      baseURL: clientOptions.baseURL,
+      httpsAgent: clientOptions.httpsAgent
     });
   }
 
