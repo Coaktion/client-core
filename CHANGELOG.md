@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/Coaktion/client-core/compare/v1.8.3...v1.9.0) (2024-09-26)
+
+
+### Features
+
+* add httpsAgent to axios client ([657b017](https://github.com/Coaktion/client-core/commit/657b017c84023c1f30d35063cdfea3ed70a74a5c))
+
 ### [1.8.3](https://github.com/Coaktion/client-core/compare/v1.8.2...v1.8.3) (2024-08-05)
 
 ### [1.8.1](https://github.com/Coaktion/client-core/compare/v1.8.0...v1.8.1) (2024-08-02)
