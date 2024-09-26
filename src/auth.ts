@@ -62,7 +62,8 @@ export class BearerAuth extends BaseBearerAuth implements AuthBasic {
     super(authOptions);
     this.authOptions = authOptions;
     this.client = axios.create({
-      baseURL: this.authOptions.baseUrl
+      baseURL: this.authOptions.baseUrl,
+      httpsAgent: this.authOptions.httpsAgent
     });
   }
 
