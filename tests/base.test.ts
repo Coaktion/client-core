@@ -2,18 +2,19 @@ import {
   AuthProviderNotFound,
   BaseClient,
   EndpointNotSet,
+  HttpStatusCodesRetryCondition,
   InvalidAuthOptions
 } from '../src';
 
+const endpoints = {
+  create: '/users',
+  delete: '/users/{id}',
+  fetch: '/users/{id}',
+  searchAllPages: '/users',
+  search: '/users',
+  update: '/users/{id}'
+};
 describe('BaseClient', () => {
-  const endpoints = {
-    create: '/users',
-    delete: '/users/{id}',
-    fetch: '/users/{id}',
-    searchAllPages: '/users',
-    search: '/users',
-    update: '/users/{id}'
-  };
   let clientBasic: BaseClient;
   let clientBasicWithDefaultHeader: BaseClient;
 
@@ -316,5 +317,47 @@ describe('BaseClient', () => {
       params: {},
       headers: { 'X-Header': 'test' }
     });
+  });
+});
+describe('BaseClient retryCondition', () => {
+  let client: BaseClient;
+
+  beforeEach(() => {
+    const baseParams = { authProvider: null, endpoints };
+    client = new BaseClient(baseParams);
+  });
+
+  it('should not response if error is undefined', () => {
+    const result = client.retryCondition(undefined);
+    expect(result).toBe(true);
+  });
+
+  it('should set retryAuth to true if error status is Unauthorized', () => {
+    const error = {
+      response: { status: HttpStatusCodesRetryCondition.Unauthorized }
+    };
+    const result = client.retryCondition(error);
+    expect(client.retryAuth).toBe(true);
+    expect(result).toBe(true);
+  });
+
+  it('should return true if error status is in HttpStatusCodesRetryCondition', () => {
+    const error = {
+      response: { status: HttpStatusCodesRetryCondition.TooManyRequests }
+    };
+    const result = client.retryCondition(error);
+    expect(result).toBe(true);
+  });
+
+  it('should return false if error status is not in HttpStatusCodesRetryCondition', () => {
+    const error = { response: { status: 418 } }; // I'm a teapot
+    const result = client.retryCondition(error);
+    expect(result).toBe(false);
+  });
+
+  it('should return true if error status is undefined and default to RequestTimeout', () => {
+    const error = { response: {} };
+    const result = client.retryCondition(error);
+    expect(result).toBe(true);
   });
 });

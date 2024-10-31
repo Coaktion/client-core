@@ -311,11 +311,11 @@ export class BaseClient implements BaseClientInterface {
    * @memberof BasicClient
    */
   retryCondition = (error: AxiosError | any): boolean => {
-    if (error.response.status === HttpStatusCodesRetryCondition.Unauthorized)
+    if (error?.response?.status === HttpStatusCodesRetryCondition.Unauthorized)
       this.retryAuth = true;
 
     return Object.values(HttpStatusCodesRetryCondition).includes(
-      error.response.status
+      error?.response?.status || HttpStatusCodesRetryCondition.RequestTimeout
     );
   };
 }
