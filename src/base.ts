@@ -294,8 +294,8 @@ export class BaseClient implements BaseClientInterface {
    */
   retryDelay = (retryCount: number, error: AxiosError | any): number => {
     if (retryCount >= this.clientOptions.tries)
-      throw error.response ? error.response : error;
-    return error.response.status ===
+      throw error?.response ? error.response : error;
+    return error?.response?.status ===
       HttpStatusCodesRetryCondition.TooManyRequests
       ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
       : this.clientOptions.retryDelay * 1000;
