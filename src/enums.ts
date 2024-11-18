@@ -62,10 +62,8 @@ export enum HtttpStatusCodeError {
 
 export enum ContentTypes {
   JSON = 'application/json',
+  AMZ_JSON_1_1 = 'application/x-amz-json-1.1',
   X_URL_ENCODED = 'application/x-www-form-urlencoded'
 }
 
-export const jsonContentTypes = [
-  'application/json',
-  'application/x-amz-json-1.1'
-];
+export const jsonContentTypes = [ContentTypes.JSON, ContentTypes.AMZ_JSON_1_1];

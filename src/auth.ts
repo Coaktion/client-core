@@ -123,7 +123,7 @@ export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
         dataType: this.authOptions.dataType || 'json',
         httpCompleteResponse: true,
         contentType: contentType || ContentTypes.X_URL_ENCODED,
-        data: jsonContentTypes.includes(contentType)
+        data: jsonContentTypes.includes(contentType as ContentTypes)
           ? JSON.stringify(this.authOptions.bearer.data)
           : this.authOptions.bearer.data,
         headers: this.authOptions.bearer.headers || {},
