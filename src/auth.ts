@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
-import { ContentTypes } from './enums';
+import { ContentTypes, jsonContentTypes } from './enums';
 import { ZendeskRequestError } from './exceptions';
 import { AuthBasic } from './interfaces';
 import { AuthOptions, AuthOptionsZendesk } from './types';
@@ -124,7 +124,7 @@ export class BearerAuthZendesk extends BaseBearerAuth implements AuthBasic {
         httpCompleteResponse: true,
         contentType: contentType || ContentTypes.X_URL_ENCODED,
         data:
-          contentType === ContentTypes.JSON
+          jsonContentTypes.includes(contentType)
             ? JSON.stringify(this.authOptions.bearer.data)
             : this.authOptions.bearer.data,
         headers: this.authOptions.bearer.headers || {},

@@ -64,3 +64,5 @@ export enum ContentTypes {
   JSON = 'application/json',
   X_URL_ENCODED = 'application/x-www-form-urlencoded'
 }
+
+export const jsonContentTypes = ['application/json', 'application/x-amz-json-1.1']; 
