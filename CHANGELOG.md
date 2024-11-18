@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.9.1](https://github.com/Coaktion/client-core/compare/v1.9.0...v1.9.1) (2024-11-18)
+
+
+### Bug Fixes
+
+* adding suport to amazon JSON content type in the getToken request ([a892610](https://github.com/Coaktion/client-core/commit/a892610696bba7e130f60eff3b4a7a42994fc13e))
+* using enum content-types ([408bdfb](https://github.com/Coaktion/client-core/commit/408bdfb8d703efcebc7527082c0a0ab227fc74c9))
+
 ## [1.9.0](https://github.com/Coaktion/client-core/compare/v1.8.3...v1.9.0) (2024-09-26)
 
 
