@@ -1,19 +1,22 @@
+import { AxiosError, AxiosHeaders } from 'axios';
+
 import {
   AuthProviderNotFound,
   BaseClient,
   EndpointNotSet,
+  HttpStatusCodesRetryCondition,
   InvalidAuthOptions
 } from '../src';
 
+const endpoints = {
+  create: '/users',
+  delete: '/users/{id}',
+  fetch: '/users/{id}',
+  searchAllPages: '/users',
+  search: '/users',
+  update: '/users/{id}'
+};
 describe('BaseClient', () => {
-  const endpoints = {
-    create: '/users',
-    delete: '/users/{id}',
-    fetch: '/users/{id}',
-    searchAllPages: '/users',
-    search: '/users',
-    update: '/users/{id}'
-  };
   let clientBasic: BaseClient;
   let clientBasicWithDefaultHeader: BaseClient;
 
@@ -236,16 +239,6 @@ describe('BaseClient', () => {
     expect(result.dataFetched).toEqual(['someData', 'someData2']);
   });
 
-  it('should throw with error response if exists on retryDelay', async () => {
-    try {
-      clientBasic.retryDelay(1, {
-        response: { status: 500, message: 'requestError' }
-      });
-    } catch (error) {
-      expect(error).toEqual({ status: 500, message: 'requestError' });
-    }
-  });
-
   it('should call fetch with default header', async () => {
     await clientBasicWithDefaultHeader.fetch('1');
     expect(clientBasicWithDefaultHeader.makeRequest).toHaveBeenCalledWith({
@@ -316,5 +309,128 @@ describe('BaseClient', () => {
       params: {},
       headers: { 'X-Header': 'test' }
     });
+  });
+});
+describe('BaseClient retryCondition', () => {
+  let client: BaseClient;
+
+  beforeEach(() => {
+    const baseParams = { authProvider: null, endpoints };
+    client = new BaseClient(baseParams);
+  });
+
+  it('should not response if error is undefined', () => {
+    const result = client.retryCondition(undefined);
+    expect(result).toBe(true);
+  });
+
+  it('should set retryAuth to true if error status is Unauthorized', () => {
+    const error = {
+      response: { status: HttpStatusCodesRetryCondition.Unauthorized }
+    };
+    const result = client.retryCondition(error);
+    expect(client.retryAuth).toBe(true);
+    expect(result).toBe(true);
+  });
+
+  it('should return true if error status is in HttpStatusCodesRetryCondition', () => {
+    const error = {
+      response: { status: HttpStatusCodesRetryCondition.TooManyRequests }
+    };
+    const result = client.retryCondition(error);
+    expect(result).toBe(true);
+  });
+
+  it('should return false if error status is not in HttpStatusCodesRetryCondition', () => {
+    const error = { response: { status: 418 } }; // I'm a teapot
+    const result = client.retryCondition(error);
+    expect(result).toBe(false);
+  });
+
+  it('should return true if error status is undefined and default to RequestTimeout', () => {
+    const error = { response: {} };
+    const result = client.retryCondition(error);
+    expect(result).toBe(true);
+  });
+});
+
+describe('BaseClient retryDelay', () => {
+  let client: BaseClient;
+  let axiosError: AxiosError;
+  const axiosResponse = {
+    status: HttpStatusCodesRetryCondition.TooManyRequests,
+    statusText: 'Too Many Requests',
+    headers: new AxiosHeaders({
+      'retry-after': 3
+    }),
+    data: {},
+    config: {
+      headers: new AxiosHeaders({
+        'retry-after': 3
+      })
+    }
+  };
+
+  beforeEach(() => {
+    const baseParams = { authProvider: null, endpoints };
+    client = new BaseClient(baseParams);
+    axiosError = new AxiosError(
+      'Request failed with status code 500',
+      '500',
+      undefined,
+      undefined,
+      axiosResponse
+    );
+  });
+
+  it('should throw error if retryCount exceeds tries', async () => {
+    client.clientOptions.tries = 3;
+    try {
+      await client.retryDelay(3, axiosError);
+    } catch (error) {
+      expect(error).toEqual(axiosError);
+    }
+  });
+
+  it('should throw error with not AxiosError', async () => {
+    client.clientOptions.tries = 3;
+    const throwError = new Error('error');
+    try {
+      await client.retryDelay(3, throwError);
+    } catch (error) {
+      expect(error).toEqual(throwError);
+    }
+  });
+
+  it('should return rate limit delay if error status is TooManyRequests', () => {
+    client.clientOptions.tries = 3;
+    client.clientOptions.rateLimitKey = 'retry-after';
+    expect(client.retryDelay(1, axiosError)).toBe(3000);
+  });
+
+  it('should return retryDelay if error status is TooManyRequests but no rateLimitKey', () => {
+    client.clientOptions.tries = 3;
+    client.clientOptions.rateLimitKey = 'other-key';
+    client.clientOptions.retryDelay = 5;
+    expect(client.retryDelay(1, axiosError)).toBe(5000);
+  });
+
+  it('should return retryDelay if error status is not TooManyRequests', () => {
+    client.clientOptions.tries = 3;
+    if (axiosError.response) {
+      axiosError.response.status = 500;
+    }
+    expect(client.retryDelay(1, axiosError)).toBe(3000);
+  });
+
+  it('should throw error if retryCount exceeds tries with non-AxiosError', () => {
+    client.clientOptions.tries = 3;
+    const error = new Error('error');
+    expect(() => client.retryDelay(3, error)).toThrow(error);
+  });
+
+  it('should return retryDelay if error is undefined', () => {
+    client.clientOptions.tries = 3;
+    expect(client.retryDelay(1, undefined)).toBe(3000);
   });
 });

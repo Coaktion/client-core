@@ -5,17 +5,8 @@ import {
   AuthProviderNotFound,
   AxiosClient,
   EndpointNotSet,
-  HttpStatusCodesRetryCondition,
-  HtttpStatusCodeError,
   InvalidAuthOptions
 } from '../src';
-
-const statusCodeRetry = Object.values(HttpStatusCodesRetryCondition).filter(
-  (code) => typeof code === 'number'
-);
-const statusCodeError = Object.values(HtttpStatusCodeError).filter(
-  (code) => typeof code === 'number'
-);
 
 const endpoints = {
   create: '/users',
@@ -103,74 +94,6 @@ describe('AxiosClient', () => {
     expect(response.data).toEqual(data);
     expect(response.status).toEqual(status);
   });
-
-  it.each(statusCodeRetry)(
-    'should return true when calling retryCondition %i',
-    async (code) => {
-      const axiosError = {
-        config: {},
-        response: {
-          status: code
-        }
-      } as AxiosError;
-      expect(clientBasic.retryCondition(axiosError)).toBeTruthy();
-      if (code === 401) {
-        expect(await clientBasic.retryAuth).toBeTruthy();
-      }
-    }
-  );
-
-  it.each(statusCodeError)(
-    'should return false when calling retryCondition %i',
-    async (code) => {
-      const axiosError = {
-        config: {},
-        response: {
-          status: code
-        }
-      } as AxiosError;
-      expect(clientBasic.retryCondition(axiosError)).toBeFalsy();
-    }
-  );
-
-  it.each([
-    ['too many request', 429, 10],
-    ['other', 500, 3000]
-  ])(
-    'should return %s delay value when calling retryDelay',
-    (_type, code, expected) => {
-      const axiosError = {
-        message: 'Too Many Requests',
-        code: 'TOO_MANY_REQUESTS',
-        config: {},
-        response: {
-          data: {
-            message: 'Too Many Requests'
-          },
-          status: code,
-          statusText: 'Too Many Requests',
-          headers: { 'Retry-After': '10' } as object
-        }
-      } as AxiosError;
-      const response = clientBasic.retryDelay(1, axiosError);
-      expect(response).toEqual(expected);
-    }
-  );
-
-  it.each([2, 3, 4])(
-    'should throw an AxiosError when calling retryDelay with tries equal %i and clientOptions tries equal 3',
-    (tries) => {
-      clientBasic.clientOptions.tries = 3;
-      const axiosError = new AxiosError();
-      try {
-        clientBasic.retryDelay(tries, axiosError);
-      } catch (error) {
-        if (tries !== 2) {
-          expect(error).toBeInstanceOf(AxiosError);
-        }
-      }
-    }
-  );
 
   it('should throw an AuthProviderNotFound when calling authentication and authProvider is null', async () => {
     clientBasic.clientOptions.authProvider = null;

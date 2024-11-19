@@ -281,24 +281,28 @@ export class BaseClient implements BaseClientInterface {
   }
 
   /**
-   * The function to use for retry delay
-   * @description
-   * If the error is a 429, it will use the value of the rate limit key
-   * Otherwise, it will use the retry delay from the client options
-   * @param {number} _retryCount The number of retries
-   * @param {AxiosError} error The error that was thrown
-   * @returns {number} The number of milliseconds to wait before retrying
-   * @memberof BasicClient
-   * @throws {AxiosError}
-   * @throws {InvalidAuthOptions}
+   * Calculates the retry delay based on the retry count and error.
+   * If the retry count exceeds the maximum tries, it throws the error.
+   * If the error status is 429 (Too Many Requests), it uses the rate limit key value.
+   * Otherwise, it uses the retry delay from the client options.
+   * @param {number} retryCount The number of retries attempted.
+   * @param {AxiosError} error The error that was thrown.
+   * @returns {number} The number of milliseconds to wait before retrying.
+   * @throws {AxiosError} Throws the error if the retry count exceeds the maximum tries.
    */
   retryDelay = (retryCount: number, error: AxiosError | any): number => {
-    if (retryCount >= this.clientOptions.tries)
-      throw error.response ? error.response : error;
-    return error.response.status ===
-      HttpStatusCodesRetryCondition.TooManyRequests
-      ? parseInt(error.response.headers[this.clientOptions.rateLimitKey])
-      : this.clientOptions.retryDelay * 1000;
+    if (retryCount >= this.clientOptions.tries) throw error;
+    if (
+      error?.response?.status === HttpStatusCodesRetryCondition.TooManyRequests
+    ) {
+      const rateLimitDelay = parseInt(
+        error.response.headers[this.clientOptions.rateLimitKey]
+      );
+      if (!isNaN(rateLimitDelay)) {
+        return rateLimitDelay * 1000;
+      }
+    }
+    return this.clientOptions.retryDelay * 1000;
   };
 
   /**
@@ -311,11 +315,11 @@ export class BaseClient implements BaseClientInterface {
    * @memberof BasicClient
    */
   retryCondition = (error: AxiosError | any): boolean => {
-    if (error.response.status === HttpStatusCodesRetryCondition.Unauthorized)
+    if (error?.response?.status === HttpStatusCodesRetryCondition.Unauthorized)
       this.retryAuth = true;
 
     return Object.values(HttpStatusCodesRetryCondition).includes(
-      error.response.status
+      error?.response?.status ?? HttpStatusCodesRetryCondition.RequestTimeout
     );
   };
 }
