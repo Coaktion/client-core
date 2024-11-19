@@ -182,7 +182,7 @@ describe('AxiosClient', () => {
         url: '/users'
       });
     } catch (error) {
-      expect(error.status).toEqual(500);
+      expect(error.response.status).toEqual(500);
     }
   });
 });

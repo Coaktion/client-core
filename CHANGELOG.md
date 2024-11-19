@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/Coaktion/client-core/compare/v1.9.1...v1.10.0) (2024-11-19)
+
+
+### Features
+
+* enhance retryCondition to handle undefined errors and improve status checks ([247e36b](https://github.com/Coaktion/client-core/commit/247e36b50c6e9c2a6f279a57da6b12019e581985))
+* enhance retryDelay method to improve error handling and support rate limit delays ([197fac8](https://github.com/Coaktion/client-core/commit/197fac82ee51b55e065028c437b8db4398be3ded))
+
+
+### Bug Fixes
+
+* improve error handling in retryDelay method to support optional chaining ([42db061](https://github.com/Coaktion/client-core/commit/42db061a690346dc239a62dc60dbacc7ef33b17d))
+
 ### [1.9.1](https://github.com/Coaktion/client-core/compare/v1.9.0...v1.9.1) (2024-11-18)
 
 
