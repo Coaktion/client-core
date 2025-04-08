@@ -35,7 +35,7 @@ export class ZendeskClient
 
     payload.headers = { ...this.auth, ...payload.headers };
 
-    payload.retryCount = payload.retryCount++ || 1;
+    payload.retryCount = payload.retryCount + 1 || 1;
     if (payload.pathParams)
       payload.url = converterPathParamsUrl(payload.url, payload.pathParams);
 
