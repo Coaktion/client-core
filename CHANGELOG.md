@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.2](https://github.com/Coaktion/client-core/compare/v1.10.1...v1.10.2) (2025-04-08)
+
+
+### Bug Fixes
+
+* properly increases the retry count ([55ea0d2](https://github.com/Coaktion/client-core/commit/55ea0d2b8dcdf1c84df0d1c163d3add9790348e8))
+
 ## [1.10.0](https://github.com/Coaktion/client-core/compare/v1.9.1...v1.10.0) (2024-11-19)
 
 
