@@ -5,7 +5,8 @@ export const queryParamsUrl = (url: string, params: any) => {
   const fakeOrigin = 'https://aktienow-client-core';
   const currentUrl = new URL(url, fakeOrigin);
   const searchParams = new URLSearchParams(params).toString();
-  if (currentUrl.origin === fakeOrigin) return `${currentUrl.pathname}?${searchParams}`;
+  if (currentUrl.origin === fakeOrigin)
+    return `${currentUrl.pathname}${searchParams ? `?${searchParams}` : ''}`;
   currentUrl.search = searchParams;
   return currentUrl.href;
 };
