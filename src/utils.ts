@@ -2,10 +2,10 @@ import { SearchAllStrategyProps, SearchAllStrategyReturn } from './types';
 
 /* eslint-disable no-prototype-builtins */
 export const queryParamsUrl = (url: string, params: any) => {
-  const query = Object.keys(params)
-    .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-    .join('&');
-  return url + (query ? '?' + query : '');
+  const currentUrl = new URL(url);  
+  const searchParams = new URLSearchParams(params).toString();
+  currentUrl.search = searchParams;
+  return currentUrl.href;
 };
 
 export const converterPathParamsUrl = (url: string, params: any) => {
