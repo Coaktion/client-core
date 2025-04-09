@@ -2,7 +2,7 @@ import { SearchAllStrategyProps, SearchAllStrategyReturn } from './types';
 
 /* eslint-disable no-prototype-builtins */
 export const queryParamsUrl = (url: string, params: any) => {
-  const currentUrl = new URL(url);  
+  const currentUrl = new URL(url);
   const searchParams = new URLSearchParams(params).toString();
   currentUrl.search = searchParams;
   return currentUrl.href;
