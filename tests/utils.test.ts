@@ -6,28 +6,35 @@ import {
   getNestedProperty,
   getStrategies,
   offsetStrategy,
-  pageStrategy
+  pageStrategy,
+  queryParamsUrl
 } from '../src/utils';
 
-// describe('queryParamsUrl', () => {
-//   it.each([
-//     [
-//       '/api/users',
-//       { firstName: 'John', lastName: 'Doe' },
-//       '/api/users?firstName=John&lastName=Doe'
-//     ],
-//     [
-//       '/api/users',
-//       { firstName: 'John', lastName: '' },
-//       '/api/users?firstName=John&lastName='
-//     ],
-//     ['/api/users', {}, '/api/users']
-//   ])('should add query parameters to the URL', (url, params, expected) => {
-//     const result = queryParamsUrl(url, params);
+describe('queryParamsUrl', () => {
+  it.each([
+    [
+      '/api/users',
+      { firstName: 'John', lastName: 'Doe' },
+      '/api/users?firstName=John&lastName=Doe'
+    ],
+    [
+      '/api/users',
+      { firstName: 'John', lastName: '' },
+      '/api/users?firstName=John&lastName='
+    ],
+    ['/api/users', {}, '/api/users'],
+    ['https://localhost/api/users', {}, 'https://localhost/api/users'],
+    [
+      'https://localhost/api/users',
+      { limit: 25, next: true },
+      'https://localhost/api/users?limit=25&next=true'
+    ]
+  ])('should add query parameters to the URL', (url, params, expected) => {
+    const result = queryParamsUrl(url, params);
 
-//     expect(result).toEqual(expected);
-//   });
-// });
+    expect(result).toEqual(expected);
+  });
+});
 
 describe('converterPathParamsUrl', () => {
   it.each([
