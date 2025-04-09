@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.3](https://github.com/Coaktion/client-core/compare/v1.10.2...v1.10.3) (2025-04-09)
+
+
+### Bug Fixes
+
+* properly parse query params ([714dddf](https://github.com/Coaktion/client-core/commit/714dddfd8778d6e98a74f3d8f766047232ff9849))
+
 ### [1.10.2](https://github.com/Coaktion/client-core/compare/v1.10.1...v1.10.2) (2025-04-08)
 
 
