@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.4](https://github.com/Coaktion/client-core/compare/v1.10.3...v1.10.4) (2025-04-09)
+
+
+### Bug Fixes
+
+* handle relative urls on `queryParamsUrl` ([e75d90f](https://github.com/Coaktion/client-core/commit/e75d90f55f16eea58e52965aa98b3e2e3e968499))
+
 ### [1.10.3](https://github.com/Coaktion/client-core/compare/v1.10.2...v1.10.3) (2025-04-09)
 
 
