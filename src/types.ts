@@ -240,6 +240,7 @@ export type ModalProps = {
 };
 
 export type InstanceLocations =
+  | 'new_ticket_sidebar'
   | 'ticket_sidebar'
   | 'nav_bar'
   | 'modal'
