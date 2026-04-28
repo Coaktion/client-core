@@ -211,7 +211,7 @@ export class ZendeskClient
   async modalReady() {
     await this.triggerToLocations({
       event: `modal.ready`,
-      locations: ['nav_bar', 'ticket_sidebar', 'top_bar']
+      locations: ['nav_bar', 'new_ticket_sidebar', 'ticket_sidebar', 'top_bar']
     });
   }
 
