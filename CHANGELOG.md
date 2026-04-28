@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.5](https://github.com/Coaktion/client-core/compare/v1.10.4...v1.10.5) (2026-04-28)
+
+
+### Bug Fixes
+
+* triggers modal ready event to new ticket sidebar too ([a49a1d6](https://github.com/Coaktion/client-core/commit/a49a1d6adf15025d7a71f1f60225debd151be4c3))
+
 ### [1.10.4](https://github.com/Coaktion/client-core/compare/v1.10.3...v1.10.4) (2025-04-09)
 
 
