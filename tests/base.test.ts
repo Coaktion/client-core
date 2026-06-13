@@ -179,6 +179,33 @@ describe('BaseClient', () => {
     clientBasic.clientOptions.authProvider = null;
   });
 
+  it('should invalidate the provider cached token when retrying authentication after a 401', async () => {
+    const authProvider = {
+      getToken: jest.fn().mockResolvedValue({ Authorization: 'Bearer new' }),
+      invalidateToken: jest.fn()
+    };
+    clientBasic.clientOptions.authProvider = authProvider;
+    clientBasic.retryAuth = true;
+
+    await clientBasic.authentication();
+    expect(authProvider.invalidateToken).toHaveBeenCalled();
+    expect(clientBasic.retryAuth).toBe(false);
+    clientBasic.clientOptions.authProvider = null;
+  });
+
+  it('should not invalidate the provider cached token when retryAuth is false', async () => {
+    const authProvider = {
+      getToken: jest.fn().mockResolvedValue({ Authorization: 'Bearer abc' }),
+      invalidateToken: jest.fn()
+    };
+    clientBasic.clientOptions.authProvider = authProvider;
+    clientBasic.retryAuth = false;
+
+    await clientBasic.authentication();
+    expect(authProvider.invalidateToken).not.toHaveBeenCalled();
+    clientBasic.clientOptions.authProvider = null;
+  });
+
   it('should return early with fullFetched as false if there is an error in the makeRequest', async () => {
     clientBasic.makeRequest = jest.fn();
     (clientBasic.makeRequest as jest.Mock).mockRejectedValue(

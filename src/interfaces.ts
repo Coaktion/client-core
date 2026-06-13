@@ -38,6 +38,11 @@ export interface AuthBasic {
   authOptions: AuthOptions;
   client?: AxiosInstance;
   getToken(): Promise<object>;
+  /**
+   * Optional. Providers that cache tokens (e.g. ClientCredentialsAuthZendesk)
+   * implement this so BaseClient can discard a stale token after a 401.
+   */
+  invalidateToken?(): void;
 }
 
 export interface BaseClientInterface {

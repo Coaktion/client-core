@@ -4,9 +4,11 @@ import {
   AuthApiKey,
   BasicAuth,
   BearerAuth,
-  BearerAuthZendesk
+  BearerAuthZendesk,
+  ClientCredentialsAuthZendesk
 } from '../src/auth';
 import { ContentTypes } from '../src/enums';
+import { InvalidAuthOptions } from '../src/exceptions';
 
 const mockZendeskClient = {
   request: jest.fn()
@@ -118,6 +120,153 @@ describe('BearerAuth', () => {
     expect(auth).toBeInstanceOf(BearerAuth);
     expect(auth.authOptions.apiKey).toBe('123');
     expect(await auth.getToken()).toEqual({ Authorization: 'Bearer 123' });
+  });
+});
+
+describe('ClientCredentialsAuthZendesk', () => {
+  const authOptions = {
+    subdomain: 'mycompany',
+    clientId: 'my_integration',
+    clientSecret: 'secret',
+    scope: 'tickets:read tickets:write'
+  };
+
+  it('should throw InvalidAuthOptions when neither subdomain nor baseUrl is set', () => {
+    expect(
+      () =>
+        new ClientCredentialsAuthZendesk({
+          clientId: 'my_integration',
+          clientSecret: 'secret',
+          scope: 'read'
+        })
+    ).toThrow(InvalidAuthOptions);
+  });
+
+  it('should build the token url from the subdomain', () => {
+    const auth = new ClientCredentialsAuthZendesk(authOptions);
+    expect(auth.client.defaults.baseURL).toBe('https://mycompany.zendesk.com');
+  });
+
+  it('should prefer baseUrl over subdomain', () => {
+    const auth = new ClientCredentialsAuthZendesk({
+      ...authOptions,
+      baseUrl: 'http://localhost'
+    });
+    expect(auth.client.defaults.baseURL).toBe('http://localhost');
+  });
+
+  it('should request a token with the client_credentials payload', async () => {
+    const auth = new ClientCredentialsAuthZendesk({
+      ...authOptions,
+      expiresIn: 600
+    });
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/oauth/tokens').reply(200, {
+      access_token: 'abc',
+      expires_in: 600
+    });
+
+    expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
+    expect(JSON.parse(mock.history.post[0].data)).toEqual({
+      grant_type: 'client_credentials',
+      client_id: 'my_integration',
+      client_secret: 'secret',
+      scope: 'tickets:read tickets:write',
+      expires_in: 600
+    });
+  });
+
+  it('should reuse the cached token while it is valid', async () => {
+    const auth = new ClientCredentialsAuthZendesk(authOptions);
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/oauth/tokens').reply(200, {
+      access_token: 'abc',
+      expires_in: 3600
+    });
+
+    expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
+    expect(await auth.getToken()).toEqual({ Authorization: 'Bearer abc' });
+    expect(mock.history.post.length).toBe(1);
+  });
+
+  it('should renew the token when it is within the renewal margin', async () => {
+    const auth = new ClientCredentialsAuthZendesk(authOptions);
+    const mock = new MockAdapter(auth.client);
+    // expires_in 30s is below the default 60s renewal margin
+    mock.onPost('/oauth/tokens').reply(200, {
+      access_token: 'abc',
+      expires_in: 30
+    });
+
+    await auth.getToken();
+    await auth.getToken();
+    expect(mock.history.post.length).toBe(2);
+  });
+
+  it('should honor a custom renewMarginMs', async () => {
+    // 30s token + zero margin: the cache stays valid, unlike the default 60s margin
+    const auth = new ClientCredentialsAuthZendesk({
+      ...authOptions,
+      renewMarginMs: 0
+    });
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/oauth/tokens').reply(200, {
+      access_token: 'abc',
+      expires_in: 30
+    });
+
+    await auth.getToken();
+    await auth.getToken();
+    expect(mock.history.post.length).toBe(1);
+  });
+
+  it('should not cache a token without expires_in', async () => {
+    const auth = new ClientCredentialsAuthZendesk(authOptions);
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/oauth/tokens').reply(200, { access_token: 'abc' });
+
+    await auth.getToken();
+    await auth.getToken();
+    expect(mock.history.post.length).toBe(2);
+  });
+
+  it('should request a new token after invalidateToken', async () => {
+    const auth = new ClientCredentialsAuthZendesk(authOptions);
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/oauth/tokens').reply(200, {
+      access_token: 'abc',
+      expires_in: 3600
+    });
+
+    await auth.getToken();
+    auth.invalidateToken();
+    await auth.getToken();
+    expect(mock.history.post.length).toBe(2);
+  });
+
+  it('should use a custom endpoint and headerKey when set', async () => {
+    const auth = new ClientCredentialsAuthZendesk({
+      ...authOptions,
+      endpoint: '/custom/tokens',
+      headerKey: 'X-Auth'
+    });
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/custom/tokens').reply(200, {
+      access_token: 'abc',
+      expires_in: 3600
+    });
+
+    expect(await auth.getToken()).toEqual({ 'X-Auth': 'Bearer abc' });
+  });
+
+  it('should propagate request errors when the token request fails', async () => {
+    const auth = new ClientCredentialsAuthZendesk(authOptions);
+    const mock = new MockAdapter(auth.client);
+    mock.onPost('/oauth/tokens').reply(401, { error: 'invalid_client' });
+
+    await expect(auth.getToken()).rejects.toThrow(
+      'Request failed with status code 401'
+    );
   });
 });
 

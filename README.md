@@ -68,6 +68,37 @@ apiClient.custom('123').then((response) => {
 });
 ```
 
+## Zendesk OAuth (API Token replacement)
+
+Zendesk is removing API Tokens as an authentication method (no new tokens
+after 2026-10-27, full shutdown on 2027-04-30). The replacement for
+server-to-server integrations is OAuth `client_credentials`, supported via
+`ClientCredentialsAuthZendesk`:
+
+```typescript
+import {
+  AxiosClient,
+  ClientCredentialsAuthZendesk
+} from '@coaktion/client-core';
+
+const apiClient = new AxiosClient({
+  baseURL: 'https://mycompany.zendesk.com',
+  forceAuth: true, // authenticate on every request (cheap: the token is cached)
+  endpoints: { search: '/api/v2/tickets' },
+  authProvider: new ClientCredentialsAuthZendesk({
+    subdomain: 'mycompany',
+    clientId: 'my_integration',
+    clientSecret: process.env.ZENDESK_CLIENT_SECRET, // never commit it
+    scope: 'tickets:read tickets:write' // required: no scope = no permissions
+  })
+});
+```
+
+The provider requests the token from `POST /oauth/tokens` (grant-type
+endpoint), caches it in memory and renews it 60s before expiry —
+`client_credentials` has no refresh token. On a 401 the client invalidates
+the cached token and retries with a fresh one.
+
 ## License
 
 Client Core is [Copyright](./LICENSE).

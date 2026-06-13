@@ -47,6 +47,14 @@ export class BaseClient implements BaseClientInterface {
     if (!this.clientOptions.authProvider) throw new AuthProviderNotFound();
 
     try {
+      // a 401 means the current token is stale/revoked — drop the
+      // provider's cache (when it has one) so getToken mints a new token
+      if (
+        this.retryAuth &&
+        typeof this.clientOptions.authProvider.invalidateToken === 'function'
+      )
+        this.clientOptions.authProvider.invalidateToken();
+
       this.auth = await this.clientOptions.authProvider.getToken();
       this.retryAuth = false;
     } catch (error) {

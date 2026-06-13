@@ -1,9 +1,13 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 
 import { ContentTypes, jsonContentTypes } from './enums';
-import { ZendeskRequestError } from './exceptions';
+import { InvalidAuthOptions, ZendeskRequestError } from './exceptions';
 import { AuthBasic } from './interfaces';
-import { AuthOptions, AuthOptionsZendesk } from './types';
+import {
+  AuthOptions,
+  AuthOptionsZendesk,
+  ClientCredentialsAuthOptions
+} from './types';
 import { getHeaderContentType, getNestedProperty } from './utils';
 
 export class AuthApiKey implements AuthBasic {
@@ -97,6 +101,114 @@ export class BearerAuth extends BaseBearerAuth implements AuthBasic {
     }
 
     return response;
+  }
+}
+
+class BaseOAuth {
+  authOptions: ClientCredentialsAuthOptions;
+  protected cachedToken: string | null;
+  protected expiresAt: number;
+
+  constructor(authOptions: ClientCredentialsAuthOptions) {
+    this.authOptions = authOptions;
+    this.cachedToken = null;
+    this.expiresAt = 0;
+  }
+
+  protected get headerKey(): string {
+    return this.authOptions.headerKey || 'Authorization';
+  }
+
+  /**
+   * Returns the cached Bearer header while the token is still valid,
+   * with a renewal margin (default 60s) so a token about to expire
+   * is not reused. Returns null when a new token must be requested.
+   */
+  protected getCachedToken(): object | null {
+    const renewMargin = this.authOptions.renewMarginMs ?? 60000;
+    if (this.cachedToken && Date.now() < this.expiresAt - renewMargin)
+      return { [this.headerKey]: 'Bearer ' + this.cachedToken };
+    return null;
+  }
+
+  protected cacheToken(accessToken: string, expiresIn: number): object {
+    this.cachedToken = accessToken;
+    this.expiresAt = expiresIn ? Date.now() + expiresIn * 1000 : 0;
+    return { [this.headerKey]: 'Bearer ' + accessToken };
+  }
+
+  /**
+   * Discards the cached token so the next getToken call requests a new
+   * one. Called by BaseClient.authentication when a request got a 401.
+   */
+  invalidateToken(): void {
+    this.cachedToken = null;
+    this.expiresAt = 0;
+  }
+
+  protected tokenPayload(): object {
+    return {
+      grant_type: 'client_credentials',
+      client_id: this.authOptions.clientId,
+      client_secret: this.authOptions.clientSecret,
+      scope: this.authOptions.scope,
+      ...(this.authOptions.expiresIn && {
+        expires_in: this.authOptions.expiresIn
+      })
+    };
+  }
+}
+
+/**
+ * Zendesk OAuth client_credentials provider
+ * @description
+ * Replaces Zendesk API Token authentication in server-to-server
+ * integrations. Requests a token from POST /oauth/tokens (the grant-type
+ * endpoint at the root, not the admin /api/v2/oauth/tokens) using
+ * clientId + clientSecret, caches it in memory and renews it on demand —
+ * client_credentials issues no refresh token.
+ *
+ * The request shape (JSON body, space-separated scope string, subdomain
+ * based url) follows Zendesk's OAuth model, hence the Zendesk suffix.
+ * @example
+ * const authProvider = new ClientCredentialsAuthZendesk({
+ *   subdomain: 'mycompany',
+ *   clientId: 'my_integration',
+ *   clientSecret: process.env.ZENDESK_CLIENT_SECRET,
+ *   scope: 'tickets:read tickets:write'
+ * });
+ */
+export class ClientCredentialsAuthZendesk
+  extends BaseOAuth
+  implements AuthBasic
+{
+  client: AxiosInstance;
+
+  constructor(authOptions: ClientCredentialsAuthOptions) {
+    super(authOptions);
+    if (!authOptions.baseUrl && !authOptions.subdomain)
+      throw new InvalidAuthOptions();
+
+    this.client = axios.create({
+      baseURL:
+        authOptions.baseUrl || `https://${authOptions.subdomain}.zendesk.com`,
+      httpsAgent: authOptions.httpsAgent
+    });
+  }
+
+  async getToken(): Promise<object> {
+    const cached = this.getCachedToken();
+    if (cached) return cached;
+
+    const response = await this.client.request({
+      method: 'post',
+      url: this.authOptions.endpoint || '/oauth/tokens',
+      data: this.tokenPayload()
+    });
+    return this.cacheToken(
+      response.data.access_token,
+      response.data.expires_in
+    );
   }
 }
 

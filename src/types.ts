@@ -174,6 +174,38 @@ export type AuthOptionsZendesk = AuthOptions & {
 };
 
 /**
+ * ClientCredentialsAuthOptions type
+ * @description Options for the OAuth client_credentials flow (Zendesk API Token replacement)
+ * @typedef ClientCredentialsAuthOptions
+ * @property {string} clientId - The OAuth client unique identifier
+ * @property {string} clientSecret - The OAuth client secret (keep it in an env var / secret manager)
+ * @property {string} scope - Space-separated scopes (e.g. 'tickets:read tickets:write'). Required: a token issued without scope has no permissions
+ * @property {string} [subdomain] - The Zendesk subdomain, used to build https://{subdomain}.zendesk.com
+ * @property {string} [baseUrl] - Full base url of the token server. Takes precedence over subdomain
+ * @property {string} [endpoint] - The token endpoint. Defaults to '/oauth/tokens' (grant-type endpoint, not the admin /api/v2/oauth/tokens)
+ * @property {number} [expiresIn] - Requested token lifetime in seconds
+ * @property {number} [renewMarginMs] - How long before expiry the cached token is renewed. Defaults to 60000
+ * @property {string} [headerKey] - The header key to use. Defaults to 'Authorization'
+ * @example
+ * import { ClientCredentialsAuthOptions } from './types';
+ *
+ * const options: ClientCredentialsAuthOptions = {
+ *   subdomain: 'mycompany',
+ *   clientId: 'my_integration',
+ *   clientSecret: process.env.ZENDESK_CLIENT_SECRET,
+ *   scope: 'tickets:read tickets:write'
+ * }
+ */
+export type ClientCredentialsAuthOptions = AuthOptions & {
+  clientId: string;
+  clientSecret: string;
+  scope: string;
+  subdomain?: string;
+  expiresIn?: number;
+  renewMarginMs?: number;
+};
+
+/**
  * Payload type
  * @description Type for Payload Request Base
  * @typedef Payload
